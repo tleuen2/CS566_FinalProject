@@ -1,0 +1,108 @@
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 1
+Sol  : [0 11 15 5 14 6 3 4 8 7 16 9 1 12 10 13 2 0] 39 Best Cost Variable: 39
+Time : 6.30954 s.
+
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 2
+Sol  : [0 2 13 10 1 9 12 5 6 14 15 4 3 16 8 7 11 0] 39 Best Cost Variable: 39
+Time : 5.85146 s.
+DistT: 9.53674e-07 s.
+ 
+TACC: Shutdown complete. Exiting.
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 4
+Sol  : [0 11 8 7 16 4 3 15 5 14 6 1 10 9 12 2 13 0] 39 Best Cost Variable: 39
+Time : 2.73244 s.
+DistT: 9.53674e-07 s.
+ 
+TACC: Shutdown complete. Exiting.
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 8
+Sol  : [0 2 13 9 1 10 12 15 14 5 6 4 3 16 8 7 11 0] 39 Best Cost Variable: 39
+Time : 2.20219 s.
+DistT: 9.53674e-07 s.
+ 
+TACC: Shutdown complete. Exiting.
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 16
+Sol  : [0 8 16 7 3 4 6 14 15 5 12 10 9 1 2 13 11 0] 39 Best Cost Variable: 39
+Time : 0.870885 s.
+DistT: 9.53674e-07 s.
+ 
+TACC: Shutdown complete. Exiting.
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 32
+Sol  : [0 14 15 5 6 4 3 7 16 8 10 1 12 9 2 13 11 0] 39 Best Cost Variable: 39
+Time : 1.16867 s.
+DistT: 9.53674e-07 s.
+ 
+TACC: Shutdown complete. Exiting.
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 64
+Sol  : [0 11 5 14 15 6 4 3 8 7 16 9 1 12 10 13 2 0] 39 Best Cost Variable: 39
+Time : 1.5006 s.
+DistT: 9.53674e-07 s.
+ 
+TACC: Shutdown complete. Exiting.
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 128
+Sol  : [0 13 2 9 1 10 12 5 15 6 14 3 4 16 8 7 11 0] 39 Best Cost Variable: 39
+Time : 1.48653 s.
+DistT: 1.90735e-06 s.
+ 
+TACC: Shutdown complete. Exiting.
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 256
+Sol  : [0 6 15 14 5 3 4 16 7 8 12 10 1 9 2 13 11 0] 39 Best Cost Variable: 39
+Time : 0.725332 s.
+DistT: 5.00679e-06 s.
+ 
+TACC: Shutdown complete. Exiting.
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 512
+Sol  : [0 15 14 5 6 4 3 7 16 8 9 1 10 12 2 13 11 0] 39 Best Cost Variable: 39
+Time : 1.48961 s.
+DistT: 9.77516e-06 s.
+ 
+TACC: Shutdown complete. Exiting.
+TACC: Starting up job 5231714
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+Ver  : 17
+n(P) : 1024
+Sol  : [0 15 6 14 5 4 3 8 16 7 1 10 9 12 13 2 11 0] 39 Best Cost Variable: 39
+Time : 3.12053 s.
+DistT: 1.81198e-05 s.
+ 
+TACC: Shutdown complete. Exiting.

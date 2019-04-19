@@ -1,0 +1,11 @@
+#!/bin/bash
+#SBATCH -J ptsp
+#SBATCH -p development
+#SBATCH -o output
+#SBATCH -e error
+#SBATCH -t 00:15:00
+#SBATCH -n 256
+for P in 1 2 4 8 16 32 64 128 256 512 1024
+do
+ibrun -np $P ptsp br17.atsp
+done

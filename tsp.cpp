@@ -49,10 +49,16 @@ struct Path					// contains the partial solution
 	}
 	void init()				// initialization
 	{
+		// Intialize all possible paths to -1
 		for (int i = 0; i < GRAPHSIZE; i++)
 			path[i] = -1;
+		// The first path option is set to 0, this is done so we always start from the first node
 		path[0] = 0;
-		cost = 0;
+		// Intial cost is 0
+		// Cost -> Cost(A) + Cost(B)
+		// Cost(A) = cost from root to the current node
+		// Cost(B) = cost from current node to the leaf
+		cost = 0; // This is cost(A) of the first node
 		numberOfVisitedNode = 1;
 	}
 	bool hasVisited(int vertex)	// check whether the given node has been visited, return true if yes, false if no
@@ -147,15 +153,21 @@ int main(int argc, char **argv)
 		distStart = MPI_Wtime();
 		int setPartialSolutionSize = size;	// set the intial input data partition size
 		int intialLevel = 0, partialSolutionSize = 1, count = 0;
+
+		// WHY???
 		while (partialSolutionSize <= setPartialSolutionSize && intialLevel < GRAPHSIZE)	// determine the level of intial partial solution
 		{
+			// Caculate the number of possible solutions. 
 			partialSolutionSize *= (GRAPHSIZE - intialLevel - 1);
 			intialLevel++;
 		}
+		// WHY?
+
 		Path solution;
 		solution.init();
 		for (int i = 1; i <= intialLevel; i++)	// initialize the partial solution path
 			solution.path[i] = i;
+		// Subtract one from the last item in the path, wtf?
 		solution.path[intialLevel]--;
 		if (rank == master)		// master command
 		{
@@ -404,7 +416,9 @@ doAgain:
 					{
 						int lowerBoundEstimation, costTemp = 0;	// path cost is a temp
 						for (int pathi = 0; pathi < node.numberOfVisitedNode - 1; pathi++)
+							// This is Cost(A) for this corresponding node
 							costTemp += Adj[node.path[pathi]][node.path[pathi + 1]];
+						// This is total cost with Cost(B) added
 						costTemp += Adj[node.path[node.numberOfVisitedNode - 1]][i];
 						vector<int> primsVertices;	// set of all nodes in the MST
 						for (int city = 0; city < GRAPHSIZE; city++)	// get all nodes that will be involved into MST
@@ -423,6 +437,7 @@ doAgain:
 										temp[x][y] = 0;
 									else
 										temp[x][y] = temp[y][x] = Adj[primsVertices[x]][primsVertices[y]];	// symmetry matrix
+							// When the guy in the video reduces the rows and columns to get the minimum cost...
 							lowerBoundEstimation = prims(temp, vprims);
 							for (int iter = 0; iter < vprims; iter++)
 								delete[] temp[iter];
@@ -432,6 +447,7 @@ doAgain:
 							lowerBoundEstimation = 0;
 						int costEstimation = costTemp + lowerBoundEstimation;
 						// Code for lb ends
+						// Pick the best solution
 						if (costEstimation < bestSolution.cost)
 						{
 							Path child;

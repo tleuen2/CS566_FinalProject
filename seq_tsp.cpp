@@ -16,7 +16,7 @@ using namespace std;
 
 #define filename "Input.txt"
 #define INF 3000000
-#define maxsize 28
+#define MAXSIZE 28
 
 struct city
 {
@@ -30,13 +30,13 @@ struct Path
 {
 	int number_visit_city;
 	int cost;
-	int path[maxsize];
+	int path[MAXSIZE];
 
 	Path(){}
 
 	//print out the final solution path + cost
 	void toString() {
-		for (int i = 0; i < maxsize; i++)
+		for (int i = 0; i < MAXSIZE; i++)
 			cout << path[i] << " -> ";
 		cout << path[0] << " . The cost = " << cost << endl;
 	}
@@ -44,7 +44,7 @@ struct Path
 	//initializtion
 	void init()
 	{
-		for (int i = 0; i < maxsize; i++)
+		for (int i = 0; i < MAXSIZE; i++)
 			path[i] = -1;
 		path[0] = 0;
 		cost = 0;
@@ -55,7 +55,7 @@ struct Path
 	{
 		if(number_visit_city > 1)
 		{
-			for(int i = 0; i < maxsize - 1; i++)
+			for(int i = 0; i < MAXSIZE - 1; i++)
 			{
 				if(path[i] != -1)
 				{
@@ -76,7 +76,7 @@ struct Path
 
 	bool is_solution() //whether or not all cities are visited, if yes, this is the solution, if no, not a complete solution
 	{
-		for (int i = 0; i < maxsize; i++)
+		for (int i = 0; i < MAXSIZE; i++)
 			if (path[i] == -1)
 				return false;
 			return cost != -1;
@@ -98,9 +98,9 @@ void start_partition_phase(int *partial_solution_size, int size_of_processors, i
 
 int main(int argc, char *argv[]) {
 
-	int maxsize = (int)argv[1];
+	//int MAXSIZE = (int)argv[1];
 	//use for transform EUD_2D format into adjecent matrix
-	float adj_matrix[maxsize][maxsize];
+	float adj_matrix[MAXSIZE][MAXSIZE];
 	int size_input = 0;
 	int city_index = 0;
 	int x_index = 0;
@@ -220,16 +220,16 @@ int main(int argc, char *argv[]) {
 	Path best_solution; //the overall best solution.
 	best_solution.init();
 
-	best_solution.number_visit_city = maxsize;
+	best_solution.number_visit_city = MAXSIZE;
 	best_solution.cost = best_solution.path[0] = 0;
 
 	// this for loop compute the cost for 0 -> 1 ->2 -> ... n-1
-	for (int i = 0; i < maxsize-1; i++)
+	for (int i = 0; i < MAXSIZE-1; i++)
 	{
 		best_solution.path[i] = i; //the order of visited for each city
 		best_solution.cost += adj_matrix[i][i + 1]; //adding the cost for city i -> i+1 (i+1 is up to n-1)
 	}
-	best_solution.cost += adj_matrix[maxsize - 1][0]; //adding the cost for (n-1 -> 0)
+	best_solution.cost += adj_matrix[MAXSIZE - 1][0]; //adding the cost for (n-1 -> 0)
 
 	//cout << "best cost: " << best_solution.cost << endl;
 
@@ -250,7 +250,7 @@ int main(int argc, char *argv[]) {
 		//check current solution if it is better than the current best solution so far, update the best solution.
 		if (current_solution.is_solution()) // cost = -1 means, this solution is not feasible (cannot back to the starting city) 
 		{
-			//for (int i = 0; i < maxsize; i++)
+			//for (int i = 0; i < MAXSIZE; i++)
 			//	cout << current_solution.path[i] << endl;
 			best_solution = current_solution;
 			//cout << "best cost: " << best_solution.cost << endl;
@@ -260,7 +260,7 @@ int main(int argc, char *argv[]) {
 		if (!current_solution.is_solution()) //explore the partial solution (this partial solution has less cost than the best solution, pruned by the above if statement).
 		{
 			// now visit all the cities that can be visited (if the graph is not a complete graph) and also, has not been visited yet (skip the visited cities, not repeat path) :
-			for (int i = 0; i < maxsize; i++)
+			for (int i = 0; i < MAXSIZE; i++)
 				if (adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i] != INF && !current_solution.visited(i))	// check if can be visited AND is an unvisited city
 				{
 					int lowerBoundEstimation, costTemp = 0;	// LB cost, temp path cost
@@ -275,7 +275,7 @@ int main(int argc, char *argv[]) {
 					//Now, based on this new city (i), check the MST cost of the remaining part which is the lower-bound cost (but may not be able to reach)
 					vector<int> primsVertices;	// The structure for computing MST using PRIM algo.
 
-					for (int city = 0; city < maxsize; city++)	// get all cities that will be involved into MST (in the sub-graph)
+					for (int city = 0; city < MAXSIZE; city++)	// get all cities that will be involved into MST (in the sub-graph)
 						if (city == 0 || city == i || !current_solution.visited(city))	// if the city has not been visited, or the starting city (need to add the path/cost back to the starting city)
 							primsVertices.push_back(city);
 					int vprims = primsVertices.size();	// # of cities in the MST
@@ -314,15 +314,15 @@ int main(int argc, char *argv[]) {
 						//get a copy of the current solution and update path info, cost info, and # of cities have been visited info.
 						Path child;
 						child.init();
-						std::copy(current_solution.path, current_solution.path + maxsize, child.path);
+						std::copy(current_solution.path, current_solution.path + MAXSIZE, child.path);
 						child.cost = costEstimation;
 						child.path[current_solution.number_visit_city] = i;
 						child.number_visit_city = current_solution.number_visit_city + 1;
 
 						// if all nodes have been visited, but the last city cannot go back to the starting city, this is not the complete solution and set the cost = -1 as a flag.
 						//
-						if (child.number_visit_city == maxsize)
-							if (adj_matrix[0][child.path[maxsize - 1]] == INF)
+						if (child.number_visit_city == MAXSIZE)
+							if (adj_matrix[0][child.path[MAXSIZE - 1]] == INF)
 								child.cost = -1; //a flag that this solution is not feasible and will be removed.
 						pq.push(child); //push back into priority_queue for futher update (partial solution) or update best solution (complete solution)
 					}
@@ -332,7 +332,7 @@ int main(int argc, char *argv[]) {
 
 	}
 
-	cout << "Ver  : " << maxsize << endl;					// graph size
+	cout << "Ver  : " << MAXSIZE << endl;					// graph size
 	
 	cout << "Sol  : ";
 	best_solution.toString();
@@ -392,8 +392,8 @@ int prims(int **A, int n) //MST Prim algo.
 	//-----------------------------------------PART 3------------------------------------------//
 	//-------------------------------------udea of starting partition_phase for parallel TSP---//
 
-void start_partition_phase(int *partial_solution_size, int size_of_processors, int *size_input, priority_queue<Path, vector<Path>, NodeCompare> localQueue,
-							int *maxsize, int rank, priority_queue<Path, vector<Path>, NodeCompare>  *myQueue)
+void start_partition_phase(int *partial_solution_size, int size_of_processors, int *size_input,
+							int *MAXSIZE, int rank, priority_queue<Path, vector<Path>, NodeCompare>  *myQueue)
 {
 	priority_queue<Path, vector<Path>, NodeCompare> tempBuffer1;
 	priority_queue<Path, vector<Path>, NodeCompare> tempBuffer2;
@@ -414,7 +414,7 @@ void start_partition_phase(int *partial_solution_size, int size_of_processors, i
 	}
 
 	// Get the intial paths and add them to the temporary queue
-	for(int k = 0; k < maxsize; k++)
+	for(int k = 0; k < MAXSIZE; k++)
 	{
 		Path temp;
 		temp.init();
@@ -444,61 +444,53 @@ void start_partition_phase(int *partial_solution_size, int size_of_processors, i
 			Path node = tempInput.top();
 			tempInput.pop();
 
-			for(int j = 0; j < maxsize; j++)
+			for(int j = 0; j < MAXSIZE; j++)
 			{
 				if(!node.visited[j])
 				{
 					//get a copy of the current solution and update path info, cost info, and # of cities have been visited info.
 					Path newNode;
 					newNode.init();
-					std::copy(node.path, node.path + maxsize, newNode.path);
+					std::copy(node.path, node.path + MAXSIZE, newNode.path);
 					newNode.cost = node.cost;
 					newNode.path[node.number_visit_city] = j;
 					newNode.number_visit_city = node.number_visit_city + 1;
+					newNode.updateCost();
 					tempOutput.push(newNode);
 				}
 			}
 		}
+		Buffer1 = !Buffer1;
+	}
 
-		// Give all of the processors their intial set of partial solutions. 
-		for(int w = 0; w < number_of_partial_solution; w++)
+	// Give all of the processors their intial set of partial solutions. 
+	for(int w = 0; w < number_of_partial_solution; w++)
+	{
+		if(Buffer1)
 		{
-			if(Buffer1)
-			{
-				tempInput = &tempBuffer1;
-				tempOutput = &tempBuffer2;
-			}
-			else
-			{
-				tempInput = &tempBuffer2;
-				tempOutput = &tempBuffer1;
-			}
-
-			if((w % rank) == 0)
-			{
-				Path outNode = tempInput.top();
-				tempInput.pop();
-
-				*myQueue.push(outNode);
-			}
+			tempInput = &tempBuffer1;
+			tempOutput = &tempBuffer2;
+		}
+		else
+		{
+			tempInput = &tempBuffer2;
+			tempOutput = &tempBuffer1;
 		}
 
-	}
+		if((w % rank) == 0)
+		{
+			Path outNode = tempInput.top();
+			tempInput.pop();
 
-	void setBuffer(	priority_queue<Path, vector<Path>, NodeCompare> tempBuffer1, priority_queue<Path, vector<Path>, NodeCompare> tempBuffer2, 
-						priority_queue<Path, vector<Path>, NodeCompare>  *tempInput, priority_queue<Path, vector<Path>, NodeCompare>  *tempOutput)
-	{
-		
-	}
+			std::copy(node.path, node.path + MAXSIZE, newNode.path);
 
+			*myQueue.push(outNode);
+		}
+	}
 
 	// Now, number_of_partial_solution is the total number of initial solution will be
 	// also, partial_solution_size is the # of cities in each partial solution
 
 	//after known how many cities should be in the partial solution at the beginning, each processor will start to obtain their own initial solutions
 	// you can now implement your own way to do the partition processing
-
-
-
-
 }

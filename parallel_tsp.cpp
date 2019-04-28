@@ -71,7 +71,7 @@ struct Path
 };
 
 
-class NodeCompare				// compare the cost of the two given nodes, return yes if the former one is greater than the latter one
+class NodeCompare               // compare the cost of the two given nodes, return yes if the former one is greater than the latter one
 {
 public:
     bool operator()(const Path& n1, const Path& n2) const
@@ -209,9 +209,9 @@ int main(int argc, char *argv[])
         //Get the seeds as per rank
         int partial_solution_size = 0;
         start_partition_phase(partial_solution_size, size, MAXSIZE, rank, &pq, adj_matrix);
-        printf("Called the start phase");
+        //printf("Called the start phase\n");
         while(!pq.empty()){
-            printf("Hello: rank %d\n",rank);
+            //printf("Hello: rank %d\n",rank);
             Path current = pq.top();
             current.toString();
             pq.pop();
@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
             if (current_solution.is_solution()) // cost = -1 means, this solution is not feasible (cannot back to the starting city)
             {
                 //for (int i = 0; i < MAXSIZE; i++)
-                //	cout << current_solution.path[i] << endl;
+                //  cout << current_solution.path[i] << endl;
                 best_solution = current_solution;
                 //cout << "best cost: " << best_solution.cost << endl;
                 continue;
@@ -269,9 +269,9 @@ int main(int argc, char *argv[])
             {
                 // now visit all the cities that can be visited (if the graph is not a complete graph) and also, has not been visited yet (skip the visited cities, not repeat path) :
                 for (int i = 0; i < MAXSIZE; i++)
-                    if (adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i] != INF && !current_solution.visited(i))	// check if can be visited AND is an unvisited city
+                    if (adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i] != INF && !current_solution.visited(i))    // check if can be visited AND is an unvisited city
                     {
-                        int lowerBoundEstimation, costTemp = 0;	// LB cost, temp path cost
+                        int lowerBoundEstimation, costTemp = 0; // LB cost, temp path cost
 
                         // compute the current cost so far (for the partial solution).
                         for (int pathi = 0; pathi < current_solution.number_visit_city - 1; pathi++)
@@ -281,12 +281,12 @@ int main(int argc, char *argv[])
                         costTemp += adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i];
 
                         //Now, based on this new city (i), check the MST cost of the remaining part which is the lower-bound cost (but may not be able to reach)
-                        vector<int> primsVertices;	// The structure for computing MST using PRIM algo.
+                        vector<int> primsVertices;  // The structure for computing MST using PRIM algo.
 
-                        for (int city = 0; city < MAXSIZE; city++)	// get all cities that will be involved into MST (in the sub-graph)
-                            if (city == 0 || city == i || !current_solution.visited(city))	// if the city has not been visited, or the starting city (need to add the path/cost back to the starting city)
+                        for (int city = 0; city < MAXSIZE; city++)  // get all cities that will be involved into MST (in the sub-graph)
+                            if (city == 0 || city == i || !current_solution.visited(city))  // if the city has not been visited, or the starting city (need to add the path/cost back to the starting city)
                                 primsVertices.push_back(city);
-                        int vprims = primsVertices.size();	// # of cities in the MST
+                        int vprims = primsVertices.size();  // # of cities in the MST
 
                         //do PRIM to check the LB:
                         // obtain the sub-graph (adj-matrix) for the remaining cities (>1 cities are remaining) to compute the PRIM more efficient (not visit the entire graph)
@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
                                     if (x == y)
                                         temp[x][y] = 0;
                                     else
-                                        temp[x][y] = temp[y][x] = adj_matrix[primsVertices[x]][primsVertices[y]];	// symmetry matrix
+                                        temp[x][y] = temp[y][x] = adj_matrix[primsVertices[x]][primsVertices[y]];   // symmetry matrix
 
                             //DO PRIM to find MST of the sub-matrix (sub-graph) which is the LB cost.
                             lowerBoundEstimation = prims(temp, vprims); //MST: PRIM algo.
@@ -341,11 +341,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    cout << "Ver  : " << MAXSIZE << endl;					// graph size
+    //cout << "Ver  : " << MAXSIZE << endl;                 // graph size
 
-    cout << "Sol  : ";
-    best_solution.toString();
-    cout << " Best Cost Variable: " << best_solution.cost << endl;	// solution path and total cost
+    //cout << "Sol  : ";
+    //best_solution.toString();
+    //cout << " Best Cost Variable: " << best_solution.cost << endl;    // solution path and total cost
 
     getchar();
     return 0;
@@ -369,9 +369,9 @@ int prims(int **A, int n) //MST Prim algo.
     while (numberOfEdges < n)
     {
         min = INF;
-        for (i = 0; i < n; i++)			// trace the node that has been visited
+        for (i = 0; i < n; i++)         // trace the node that has been visited
             if (visited[i] == true)
-                for (j = 0; j < n; j++)	// trace the node that has not been visited
+                for (j = 0; j < n; j++) // trace the node that has not been visited
                     if (visited[j] == false)
                         if (min > A[i][j]) //find the smallest cost edge (or arc for directed graph) and add it to the visited list.
                         {
@@ -401,27 +401,20 @@ int prims(int **A, int n) //MST Prim algo.
 //-----------------------------------------PART 3------------------------------------------//
 //-------------------------------------udea of starting partition_phase for parallel TSP---//
 
-void start_partition_phase(int partial_solution_size, int size_of_processors, int size_input, int rank,
+void start_partition_phase(int partial_solution_size1, int size_of_processors, int size_input, int rank,
         priority_queue<Path, vector<Path>, NodeCompare>  *myQueue, float adj_matrix[MAXSIZE][MAXSIZE])
 {
+//    printf("Into the function for the rank-%d\n", rank);
+//    printf("Size input is-%d\n", size_input);
+//    printf("Size processors is-%d\n", size_of_processors);
     priority_queue<Path, vector<Path>, NodeCompare> tempBuffer1;
     priority_queue<Path, vector<Path>, NodeCompare> tempBuffer2;
     priority_queue<Path, vector<Path>, NodeCompare>  *tempInput;
     priority_queue<Path, vector<Path>, NodeCompare>  *tempOutput;
     int totalCount = 0;
     bool Buffer1 = true;
-    //goal: find out how many cities should be had in the partial solution so that:
-    // # of partial solution > # of processors
-    // NOTE: need to check if the # of partial solution (a function of size_input) is less than the size of processors
-    // in other words, the input graph size is too small, or the # of processors is unnecessarly large
-    int number_of_partial_solution = 0;
-    partial_solution_size = 0;
-    while (number_of_partial_solution < size_of_processors && partial_solution_size < size_input) //16proc20city
-    {
-        number_of_partial_solution *= (size_input - partial_solution_size - 1);
-        partial_solution_size++;
-    }
 
+    //Running the loop in the beginning
     // Get the intial paths and add them to the temporary queue
     for(int k = 0; k < size_input; k++)
     {
@@ -433,6 +426,20 @@ void start_partition_phase(int partial_solution_size, int size_of_processors, in
         tempBuffer1.push(temp);
         totalCount++;
     }
+    //printf("Total count is-%d\n", totalCount);
+    //goal: find out how many cities should be had in the partial solution so that:
+    // # of partial solution > # of processors
+    // NOTE: need to check if the # of partial solution (a function of size_input) is less than the size of processors
+    // in other words, the input graph size is too small, or the # of processors is unnecessarly large
+    int number_of_partial_solution = totalCount;
+    int partial_solution_size = 1;
+    while (number_of_partial_solution < size_of_processors && partial_solution_size < size_input) //16proc20city
+    {
+        number_of_partial_solution *= (size_input - partial_solution_size - 1);
+        partial_solution_size++;
+    }
+    //printf("number of partial solutions is-%d\n", number_of_partial_solution);
+
 
     // Generate the partial paths
     while(totalCount < number_of_partial_solution)
@@ -512,4 +519,3 @@ void start_partition_phase(int partial_solution_size, int size_of_processors, in
     //after known how many cities should be in the partial solution at the beginning, each processor will start to obtain their own initial solutions
     // you can now implement your own way to do the partition processing
 }
-

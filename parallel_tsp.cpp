@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
         //Get the seeds as per rank
         int partial_solution_size = 0;
         start_partition_phase(partial_solution_size, size, MAXSIZE, rank, &pq, adj_matrix);
-        //printf("Called the start phase\n");
+        //printf("Called the start phase");
         while(!pq.empty()){
             //printf("Hello: rank %d\n",rank);
             Path current = pq.top();
@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
     //cout << "Ver  : " << MAXSIZE << endl;                 // graph size
 
     //cout << "Sol  : ";
-    //best_solution.toString();
+    best_solution.toString();
     //cout << " Best Cost Variable: " << best_solution.cost << endl;    // solution path and total cost
 
     getchar();
@@ -401,20 +401,19 @@ int prims(int **A, int n) //MST Prim algo.
 //-----------------------------------------PART 3------------------------------------------//
 //-------------------------------------udea of starting partition_phase for parallel TSP---//
 
-void start_partition_phase(int partial_solution_size1, int size_of_processors, int size_input, int rank,
-        priority_queue<Path, vector<Path>, NodeCompare>  *myQueue, float adj_matrix[MAXSIZE][MAXSIZE])
+void start_partition_phase(int partial_solution_size, int size_of_processors, int size_input, int rank,
+                           priority_queue<Path, vector<Path>, NodeCompare>  *myQueue, float adj_matrix[MAXSIZE][MAXSIZE])
 {
-//    printf("Into the function for the rank-%d\n", rank);
-//    printf("Size input is-%d\n", size_input);
-//    printf("Size processors is-%d\n", size_of_processors);
     priority_queue<Path, vector<Path>, NodeCompare> tempBuffer1;
     priority_queue<Path, vector<Path>, NodeCompare> tempBuffer2;
     priority_queue<Path, vector<Path>, NodeCompare>  *tempInput;
     priority_queue<Path, vector<Path>, NodeCompare>  *tempOutput;
     int totalCount = 0;
     bool Buffer1 = true;
-
-    //Running the loop in the beginning
+    //goal: find out how many cities should be had in the partial solution so that:
+    // # of partial solution > # of processors
+    // NOTE: need to check if the # of partial solution (a function of size_input) is less than the size of processors
+    // in other words, the input graph size is too small, or the # of processors is unnecessarly large
     // Get the intial paths and add them to the temporary queue
     for(int k = 0; k < size_input; k++)
     {
@@ -426,20 +425,14 @@ void start_partition_phase(int partial_solution_size1, int size_of_processors, i
         tempBuffer1.push(temp);
         totalCount++;
     }
-    //printf("Total count is-%d\n", totalCount);
-    //goal: find out how many cities should be had in the partial solution so that:
-    // # of partial solution > # of processors
-    // NOTE: need to check if the # of partial solution (a function of size_input) is less than the size of processors
-    // in other words, the input graph size is too small, or the # of processors is unnecessarly large
+
     int number_of_partial_solution = totalCount;
-    int partial_solution_size = 1;
+    partial_solution_size = 1;
     while (number_of_partial_solution < size_of_processors && partial_solution_size < size_input) //16proc20city
     {
         number_of_partial_solution *= (size_input - partial_solution_size - 1);
         partial_solution_size++;
     }
-    //printf("number of partial solutions is-%d\n", number_of_partial_solution);
-
 
     // Generate the partial paths
     while(totalCount < number_of_partial_solution)
@@ -489,6 +482,7 @@ void start_partition_phase(int partial_solution_size1, int size_of_processors, i
     }
 
     // Give all of the processors their intial set of partial solutions.
+    cout << number_of_partial_solution << " - Partial Solutions" << endl;
     for(int w = 0; w < number_of_partial_solution; w++)
     {
         if(Buffer1)
@@ -501,15 +495,15 @@ void start_partition_phase(int partial_solution_size1, int size_of_processors, i
             tempInput = &tempBuffer2;
             tempOutput = &tempBuffer1;
         }
-
+        if(rank==0) continue;
         if((w % rank) == 0)
         {
             Path outNode = tempInput->top();
-            tempInput->pop();
 
             std::copy(outNode.path, outNode.path + MAXSIZE, outNode.path);
 
             myQueue->push(outNode);
+            tempInput->pop();
         }
     }
 

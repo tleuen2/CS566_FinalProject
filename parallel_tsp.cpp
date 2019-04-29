@@ -35,6 +35,15 @@ struct Path
 
     Path(){}
 
+    // Copy constructor
+    Path(Path old)
+    {
+        this.number_visit_city = old.number_visit_city;
+        this.cost = old.cost;
+        std::copy(old.path, old.path + MAXSIZE, this.path);
+
+    }
+
     //print out the final solution path + cost
     void toString() {
         for (int i = 0; i < MAXSIZE; i++)
@@ -511,7 +520,7 @@ void start_partition_phase(int partial_solution_size, int size_of_processors, in
         if(w == (rank + (size * num_of_solutions_so_far)))
         {
             // This is a local solution for this rank
-            Path outNode = tempInput->top();
+            Path outNode = Path(tempInput->top());
 
             std::copy(outNode.path, outNode.path + MAXSIZE, outNode.path);
 

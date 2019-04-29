@@ -483,28 +483,43 @@ void start_partition_phase(int partial_solution_size, int size_of_processors, in
 
     // Give all of the processors their intial set of partial solutions.
     cout << number_of_partial_solution << " - Partial Solutions" << endl;
-    for(int w = 0; w < number_of_partial_solution; w++)
+    if(Buffer1)
     {
-        if(Buffer1)
+        tempInput = &tempBuffer1;
+        tempOutput = &tempBuffer2;
+    }
+    else
+    {
+        tempInput = &tempBuffer2;
+        tempOutput = &tempBuffer1;
+    }
+    int max_local_solutions;
+    int num_of_solutions_so_far = 0;
+    int temp = number_of_partial_solution;
+    for(int w = 0; w < number_of_partial_solution; w++)
+    {     
+        while(temp % size != 0)
         {
-            tempInput = &tempBuffer1;
-            tempOutput = &tempBuffer2;
+            temp++;
         }
-        else
+        max_local_solutions = temp / size;
+
+        if(num_of_solutions_so_far > max_local_solutions)
         {
-            tempInput = &tempBuffer2;
-            tempOutput = &tempBuffer1;
+            continue;
         }
-        if(rank==0) continue;
-        if((w % rank) == 0)
+        if(w == (rank + (size * num_of_solutions_so_far)))
         {
+            // This is a local solution for this rank
             Path outNode = tempInput->top();
 
             std::copy(outNode.path, outNode.path + MAXSIZE, outNode.path);
 
             myQueue->push(outNode);
             tempInput->pop();
+            num_of_solutions_so_far++;
         }
+
     }
 
     // Now, number_of_partial_solution is the total number of initial solution will be

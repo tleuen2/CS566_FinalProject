@@ -10,3 +10,4 @@ clean:
 	rm -f output
 	rm -f error
 	rm parallel_tsp
+	rm test_1.out

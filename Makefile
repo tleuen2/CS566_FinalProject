@@ -3,7 +3,7 @@ PTSP:
 TSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o ptsp tsp.cpp
 test:
-	mpicxx -DMPICH_SKIP_MPICXX -o test test.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o test working_parallel.cpp
 clean:
 	rm -f ptsp
 	rm -f test

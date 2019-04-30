@@ -304,7 +304,8 @@ int main(int argc, char *argv[])
                 if(m!=rank){
                     //int *cost1 = (int*)malloc(sizeof(int));
                     Path someonesSolution;
-                    MPI_Recv(&someonesSolution, 1, MPI_Path, m, 0, MPI_COMM_WORLD, &request);
+                    //MPI_Irecv(&someonesSolution, 1, MPI_Path, m, 0, MPI_COMM_WORLD, &request);
+                    MPI_Recv(&someonesSolution, 1, MPI_Path, m, 0, MPI_COMM_WORLD, &status);
                     if(someonesSolution.cost != 0){
                         //Yeah someone just sent me something, lets check if i can use that in my calculation
                         if(someonesSolution.cost < best_solution.cost){

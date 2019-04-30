@@ -36,7 +36,7 @@ struct Path
     Path(){}
 
     // Copy constructor
-    Path::Path(Path& p)
+    Path::Path(const Path& p)
     {
         number_visit_city = p.number_visit_city;
         cost = p.cost;

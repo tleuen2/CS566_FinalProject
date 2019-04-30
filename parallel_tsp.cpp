@@ -102,7 +102,26 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     //MPI_Finalize();
-    
+    // Displacement from the root
+	disp[0] = int(&sample.numberOfVisitedNode) - int(&sample);	// the memory location w.r.t structure root to store varibale numberOfVisitedNode
+	disp[1] = int(&sample.cost) - int(&sample);					// the memory location w.r.t structure root to store varibale cost
+	disp[2] = int(&sample.path[0]) - int(&sample);				// the memory location w.r.t structure root to store array path[]
+	int blockLength[3] =
+	{
+		1,			// numberOfVisitedNode
+		1,			// cost
+		GRAPHSIZE	// input matrix
+	};
+	MPI_Type_create_struct(3,			// [in] number of blocks (integer), also number of entries in the next three parameters
+						   blockLength,	// [in] number of elements in each block (array of integer)
+						   disp,		// [in] byte displacement of each block (array of integer)
+						   type,		// [in] type of elements in each block (array of handles to datatype objects)
+						   &MPI_Path	// [out] new datatype (handle)
+						  );			// create an MPI datatype from a general set of datatypes, displacements, and block sizes
+	MPI_Type_commit(&MPI_Path);			// commit the data type
+
+
+
     //int MAXSIZE = (int)argv[1];
     //use for transform EUD_2D format into adjecent matrix
     float adj_matrix[MAXSIZE][MAXSIZE];

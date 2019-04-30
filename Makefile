@@ -15,3 +15,5 @@ clean:
 	rm -f error
 	rm parallel_tsp
 	rm test_1.out
+	rm parallel_tsp_6 parallel_tsp_8 parallel_tsp_4 parallel_tsp_15 parallel_tsp 16
+	rm parallel_tsp_28

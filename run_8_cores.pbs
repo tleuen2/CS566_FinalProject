@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#PBS -l walltime=10:00:00
+#PBS -N Homework3
+#PBS -q edu_shared
+#PBS -m abe
+#PBS -M tleuen2@uic.edu
+#PBS -d /classes/csece566/tleuen2/CS566_FinalProject
+#PBS -l nodes=1:ppn=8
+
+module load tools/mpich2-1.5-gcc
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_6 >> test_6_8proc.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_8 >> test_8_8proc.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_15 >> test_15_8proc.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_16 >> test_16_8proc.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_28 >> test_28_8proc.out

@@ -47,7 +47,7 @@ struct Path
     //print out the final solution path + cost
     void toString() {
         for (int i = 0; i < MAXSIZE; i++)
-        cout << path[i] << " -> ";
+            cout << path[i] << " -> ";
         cout << path[0] << " . The cost = " << cost << endl;
     }
     
@@ -55,7 +55,7 @@ struct Path
     void init()
     {
         for (int i = 0; i < MAXSIZE; i++)
-        path[i] = -1;
+            path[i] = -1;
         path[0] = 0;
         cost = 0;
         number_visit_city = 1;
@@ -65,16 +65,16 @@ struct Path
     bool visited(int index)
     {
         for (int i = 0; i < number_visit_city; i++)
-        if (path[i] == index)
-        return true;
+            if (path[i] == index)
+                return true;
         return false;
     }
     
     bool is_solution() //whether or not all cities are visited, if yes, this is the solution, if no, not a complete solution
     {
         for (int i = 0; i < MAXSIZE; i++)
-        if (path[i] == -1)
-        return false;
+            if (path[i] == -1)
+                return false;
         return cost != -1;
     }
 };
@@ -102,30 +102,7 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     //MPI_Finalize();
-
-    // make datatype for path
-	Path sample;						// the initial partial solution
-	sample.init();
-	MPI_Datatype MPI_Path;			// the new data type
-	MPI_Datatype type[3] = {MPI_INT, MPI_INT, MPI_INT};
-	MPI_Aint disp[3];
-    // Displacement from the root
-	disp[0] = int(&sample.numberOfVisitedNode) - int(&sample);	// the memory location w.r.t structure root to store varibale numberOfVisitedNode
-	disp[1] = int(&sample.cost) - int(&sample);					// the memory location w.r.t structure root to store varibale cost
-	disp[2] = int(&sample.path[0]) - int(&sample);				// the memory location w.r.t structure root to store array path[]
-	int blockLength[3] =
-	{
-		1,			// numberOfVisitedNode
-		1,			// cost
-		GRAPHSIZE	// input matrix
-	};
-	MPI_Type_create_struct(3,			// [in] number of blocks (integer), also number of entries in the next three parameters
-						   blockLength,	// [in] number of elements in each block (array of integer)
-						   disp,		// [in] byte displacement of each block (array of integer)
-						   type,		// [in] type of elements in each block (array of handles to datatype objects)
-						   &MPI_Path	// [out] new datatype (handle)
-						  );			// create an MPI datatype from a general set of datatypes, displacements, and block sizes
-	MPI_Type_commit(&MPI_Path);			// commit the data type
+    
     //int MAXSIZE = (int)argv[1];
     //use for transform EUD_2D format into adjecent matrix
     float adj_matrix[MAXSIZE][MAXSIZE];
@@ -282,13 +259,13 @@ int main(int argc, char *argv[])
             
             pq.pop();
             //printf("Rank - %d exploring path\n", rank);
-            current_solution.toString();
+            //current_solution.toString();
             //pop out the smallest cost solution so far,
             //and after adding the next sub-path (next city),
             //need to push this updated solution back to the queue and update the priority (cost based order)
             
             if (current_solution.cost >= best_solution.cost) // if the cost is greater than the best solution (so far) cost, prune it directly.
-            continue;
+                continue;
             
             //check current solution if it is better than the current best solution so far, update the best solution.
             if (current_solution.is_solution()) // cost = -1 means, this solution is not feasible (cannot back to the starting city)
@@ -297,8 +274,8 @@ int main(int argc, char *argv[])
                 //                    cout << current_solution.path[i] << endl;
                 //                }
                 best_solution = current_solution;
-                printf("Rank - %d current best solution\n", rank);
-                best_solution.toString();
+                //printf("Rank - %d current best solution\n", rank);
+                //best_solution.toString();
                 //cout << "best cost: " << best_solution.cost << endl;
                 continue;
             }
@@ -307,72 +284,72 @@ int main(int argc, char *argv[])
             {
                 // now visit all the cities that can be visited (if the graph is not a complete graph) and also, has not been visited yet (skip the visited cities, not repeat path) :
                 for (int i = 0; i < MAXSIZE; i++)
-                if (adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i] != INF && !current_solution.visited(i))    // check if can be visited AND is an unvisited city
-                {
-                    int lowerBoundEstimation, costTemp = 0; // LB cost, temp path cost
-                    
-                    // compute the current cost so far (for the partial solution).
-                    for (int pathi = 0; pathi < current_solution.number_visit_city - 1; pathi++)
-                    costTemp += adj_matrix[current_solution.path[pathi]][current_solution.path[pathi + 1]];
-                    
-                    // add the next city based on the index i
-                    costTemp += adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i];
-                    
-                    //Now, based on this new city (i), check the MST cost of the remaining part which is the lower-bound cost (but may not be able to reach)
-                    vector<int> primsVertices;  // The structure for computing MST using PRIM algo.
-                    
-                    for (int city = 0; city < MAXSIZE; city++)  // get all cities that will be involved into MST (in the sub-graph)
-                    if (city == 0 || city == i || !current_solution.visited(city))  // if the city has not been visited, or the starting city (need to add the path/cost back to the starting city)
-                    primsVertices.push_back(city);
-                    int vprims = primsVertices.size();  // # of cities in the MST
-                    
-                    //do PRIM to check the LB:
-                    // obtain the sub-graph (adj-matrix) for the remaining cities (>1 cities are remaining) to compute the PRIM more efficient (not visit the entire graph)
-                    if (vprims > 1)
+                    if (adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i] != INF && !current_solution.visited(i))    // check if can be visited AND is an unvisited city
                     {
-                        int **temp = new int*[vprims];
-                        for (int iter = 0; iter < vprims; iter++)
-                        temp[iter] = new int[vprims];
-                        // define sub-matrix in the MST
-                        for (int x = 0; x < vprims; x++)
-                        for (int y = 0; y < vprims; y++)
-                        if (x == y)
-                        temp[x][y] = 0;
-                        else
-                        temp[x][y] = temp[y][x] = adj_matrix[primsVertices[x]][primsVertices[y]];   // symmetry matrix
+                        int lowerBoundEstimation, costTemp = 0; // LB cost, temp path cost
                         
-                        //DO PRIM to find MST of the sub-matrix (sub-graph) which is the LB cost.
-                        lowerBoundEstimation = prims(temp, vprims); //MST: PRIM algo.
-                        for (int iter = 0; iter < vprims; iter++)
-                        delete[] temp[iter];
-                        delete[] temp;
-                    }
-                    else //just in case if only 1 city here, the cases is i = 0, where the starting city is the only one remaining (i must be 0, otherwise, the size of vprims = 2 at least).
-                    lowerBoundEstimation = 0; //thus, no LB cost (starting city to starting city).
-                    
-                    //Now, after finding the LB cost, update the estimated LB cost to the current cost so that, can have an esitmation of how good the current solution is.
-                    int costEstimation = costTemp + lowerBoundEstimation;
-                    // Code for lb ends
-                    
-                    // decide whether or not keep this updated current solution (compared to the best solution so far)
-                    if (costEstimation < best_solution.cost) // if the current solution is good, then, keep it
-                    {
-                        //get a copy of the current solution and update path info, cost info, and # of cities have been visited info.
-                        Path child;
-                        child.init();
-                        std::copy(current_solution.path, current_solution.path + MAXSIZE, child.path);
-                        child.cost = costEstimation;
-                        child.path[current_solution.number_visit_city] = i;
-                        child.number_visit_city = current_solution.number_visit_city + 1;
+                        // compute the current cost so far (for the partial solution).
+                        for (int pathi = 0; pathi < current_solution.number_visit_city - 1; pathi++)
+                            costTemp += adj_matrix[current_solution.path[pathi]][current_solution.path[pathi + 1]];
                         
-                        // if all nodes have been visited, but the last city cannot go back to the starting city, this is not the complete solution and set the cost = -1 as a flag.
-                        //
-                        if (child.number_visit_city == MAXSIZE)
-                        if (adj_matrix[0][child.path[MAXSIZE - 1]] == INF)
-                        child.cost = -1; //a flag that this solution is not feasible and will be removed.
-                        pq.push(child); //push back into priority_queue for futher update (partial solution) or update best solution (complete solution)
+                        // add the next city based on the index i
+                        costTemp += adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i];
+                        
+                        //Now, based on this new city (i), check the MST cost of the remaining part which is the lower-bound cost (but may not be able to reach)
+                        vector<int> primsVertices;  // The structure for computing MST using PRIM algo.
+                        
+                        for (int city = 0; city < MAXSIZE; city++)  // get all cities that will be involved into MST (in the sub-graph)
+                            if (city == 0 || city == i || !current_solution.visited(city))  // if the city has not been visited, or the starting city (need to add the path/cost back to the starting city)
+                                primsVertices.push_back(city);
+                        int vprims = primsVertices.size();  // # of cities in the MST
+                        
+                        //do PRIM to check the LB:
+                        // obtain the sub-graph (adj-matrix) for the remaining cities (>1 cities are remaining) to compute the PRIM more efficient (not visit the entire graph)
+                        if (vprims > 1)
+                        {
+                            int **temp = new int*[vprims];
+                            for (int iter = 0; iter < vprims; iter++)
+                                temp[iter] = new int[vprims];
+                            // define sub-matrix in the MST
+                            for (int x = 0; x < vprims; x++)
+                                for (int y = 0; y < vprims; y++)
+                                    if (x == y)
+                                        temp[x][y] = 0;
+                                    else
+                                        temp[x][y] = temp[y][x] = adj_matrix[primsVertices[x]][primsVertices[y]];   // symmetry matrix
+                            
+                            //DO PRIM to find MST of the sub-matrix (sub-graph) which is the LB cost.
+                            lowerBoundEstimation = prims(temp, vprims); //MST: PRIM algo.
+                            for (int iter = 0; iter < vprims; iter++)
+                                delete[] temp[iter];
+                            delete[] temp;
+                        }
+                        else //just in case if only 1 city here, the cases is i = 0, where the starting city is the only one remaining (i must be 0, otherwise, the size of vprims = 2 at least).
+                            lowerBoundEstimation = 0; //thus, no LB cost (starting city to starting city).
+                        
+                        //Now, after finding the LB cost, update the estimated LB cost to the current cost so that, can have an esitmation of how good the current solution is.
+                        int costEstimation = costTemp + lowerBoundEstimation;
+                        // Code for lb ends
+                        
+                        // decide whether or not keep this updated current solution (compared to the best solution so far)
+                        if (costEstimation < best_solution.cost) // if the current solution is good, then, keep it
+                        {
+                            //get a copy of the current solution and update path info, cost info, and # of cities have been visited info.
+                            Path child;
+                            child.init();
+                            std::copy(current_solution.path, current_solution.path + MAXSIZE, child.path);
+                            child.cost = costEstimation;
+                            child.path[current_solution.number_visit_city] = i;
+                            child.number_visit_city = current_solution.number_visit_city + 1;
+                            
+                            // if all nodes have been visited, but the last city cannot go back to the starting city, this is not the complete solution and set the cost = -1 as a flag.
+                            //
+                            if (child.number_visit_city == MAXSIZE)
+                                if (adj_matrix[0][child.path[MAXSIZE - 1]] == INF)
+                                    child.cost = -1; //a flag that this solution is not feasible and will be removed.
+                            pq.push(child); //push back into priority_queue for futher update (partial solution) or update best solution (complete solution)
+                        }
                     }
-                }
             }
             
             
@@ -400,8 +377,8 @@ int main(int argc, char *argv[])
         best_solution.path[MAXSIZE-1]=MAXSIZE-1;
         best_solution.cost += adj_matrix[MAXSIZE - 1][0]; //adding the cost for (n-1 -> 0)
         
-        cout << "best cost: " << best_solution.cost << endl;
-        best_solution.toString();
+        //cout << "best cost: " << best_solution.cost << endl;
+        //best_solution.toString();
         
         
         // Now, starting the TSP B&B processing
@@ -416,7 +393,7 @@ int main(int argc, char *argv[])
             //need to push this updated solution back to the queue and update the priority (cost based order)
             
             if (current_solution.cost >= best_solution.cost) // if the cost is greater than the best solution (so far) cost, prune it directly.
-            continue;
+                continue;
             
             //check current solution if it is better than the current best solution so far, update the best solution.
             if (current_solution.is_solution()) // cost = -1 means, this solution is not feasible (cannot back to the starting city)
@@ -424,8 +401,8 @@ int main(int argc, char *argv[])
                 //for (int i = 0; i < MAXSIZE; i++)
                 //  cout << current_solution.path[i] << endl;
                 best_solution = current_solution;
-                printf("Rank - %d current best solution\n", rank);
-                best_solution.toString();
+                //printf("Rank - %d current best solution\n", rank);
+                //best_solution.toString();
                 //cout << "best cost: " << best_solution.cost << endl;
                 continue;
             }
@@ -434,72 +411,72 @@ int main(int argc, char *argv[])
             {
                 // now visit all the cities that can be visited (if the graph is not a complete graph) and also, has not been visited yet (skip the visited cities, not repeat path) :
                 for (int i = 0; i < MAXSIZE; i++)
-                if (adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i] != INF && !current_solution.visited(i))    // check if can be visited AND is an unvisited city
-                {
-                    int lowerBoundEstimation, costTemp = 0; // LB cost, temp path cost
-                    
-                    // compute the current cost so far (for the partial solution).
-                    for (int pathi = 0; pathi < current_solution.number_visit_city - 1; pathi++)
-                    costTemp += adj_matrix[current_solution.path[pathi]][current_solution.path[pathi + 1]];
-                    
-                    // add the next city based on the index i
-                    costTemp += adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i];
-                    
-                    //Now, based on this new city (i), check the MST cost of the remaining part which is the lower-bound cost (but may not be able to reach)
-                    vector<int> primsVertices;  // The structure for computing MST using PRIM algo.
-                    
-                    for (int city = 0; city < MAXSIZE; city++)  // get all cities that will be involved into MST (in the sub-graph)
-                    if (city == 0 || city == i || !current_solution.visited(city))  // if the city has not been visited, or the starting city (need to add the path/cost back to the starting city)
-                    primsVertices.push_back(city);
-                    int vprims = primsVertices.size();  // # of cities in the MST
-                    
-                    //do PRIM to check the LB:
-                    // obtain the sub-graph (adj-matrix) for the remaining cities (>1 cities are remaining) to compute the PRIM more efficient (not visit the entire graph)
-                    if (vprims > 1)
+                    if (adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i] != INF && !current_solution.visited(i))    // check if can be visited AND is an unvisited city
                     {
-                        int **temp = new int*[vprims];
-                        for (int iter = 0; iter < vprims; iter++)
-                        temp[iter] = new int[vprims];
-                        // define sub-matrix in the MST
-                        for (int x = 0; x < vprims; x++)
-                        for (int y = 0; y < vprims; y++)
-                        if (x == y)
-                        temp[x][y] = 0;
-                        else
-                        temp[x][y] = temp[y][x] = adj_matrix[primsVertices[x]][primsVertices[y]];   // symmetry matrix
+                        int lowerBoundEstimation, costTemp = 0; // LB cost, temp path cost
                         
-                        //DO PRIM to find MST of the sub-matrix (sub-graph) which is the LB cost.
-                        lowerBoundEstimation = prims(temp, vprims); //MST: PRIM algo.
-                        for (int iter = 0; iter < vprims; iter++)
-                        delete[] temp[iter];
-                        delete[] temp;
-                    }
-                    else //just in case if only 1 city here, the cases is i = 0, where the starting city is the only one remaining (i must be 0, otherwise, the size of vprims = 2 at least).
-                    lowerBoundEstimation = 0; //thus, no LB cost (starting city to starting city).
-                    
-                    //Now, after finding the LB cost, update the estimated LB cost to the current cost so that, can have an esitmation of how good the current solution is.
-                    int costEstimation = costTemp + lowerBoundEstimation;
-                    // Code for lb ends
-                    
-                    // decide whether or not keep this updated current solution (compared to the best solution so far)
-                    if (costEstimation < best_solution.cost) // if the current solution is good, then, keep it
-                    {
-                        //get a copy of the current solution and update path info, cost info, and # of cities have been visited info.
-                        Path child;
-                        child.init();
-                        std::copy(current_solution.path, current_solution.path + MAXSIZE, child.path);
-                        child.cost = costEstimation;
-                        child.path[current_solution.number_visit_city] = i;
-                        child.number_visit_city = current_solution.number_visit_city + 1;
+                        // compute the current cost so far (for the partial solution).
+                        for (int pathi = 0; pathi < current_solution.number_visit_city - 1; pathi++)
+                            costTemp += adj_matrix[current_solution.path[pathi]][current_solution.path[pathi + 1]];
                         
-                        // if all nodes have been visited, but the last city cannot go back to the starting city, this is not the complete solution and set the cost = -1 as a flag.
-                        //
-                        if (child.number_visit_city == MAXSIZE)
-                        if (adj_matrix[0][child.path[MAXSIZE - 1]] == INF)
-                        child.cost = -1; //a flag that this solution is not feasible and will be removed.
-                        pq.push(child); //push back into priority_queue for futher update (partial solution) or update best solution (complete solution)
+                        // add the next city based on the index i
+                        costTemp += adj_matrix[current_solution.path[current_solution.number_visit_city - 1]][i];
+                        
+                        //Now, based on this new city (i), check the MST cost of the remaining part which is the lower-bound cost (but may not be able to reach)
+                        vector<int> primsVertices;  // The structure for computing MST using PRIM algo.
+                        
+                        for (int city = 0; city < MAXSIZE; city++)  // get all cities that will be involved into MST (in the sub-graph)
+                            if (city == 0 || city == i || !current_solution.visited(city))  // if the city has not been visited, or the starting city (need to add the path/cost back to the starting city)
+                                primsVertices.push_back(city);
+                        int vprims = primsVertices.size();  // # of cities in the MST
+                        
+                        //do PRIM to check the LB:
+                        // obtain the sub-graph (adj-matrix) for the remaining cities (>1 cities are remaining) to compute the PRIM more efficient (not visit the entire graph)
+                        if (vprims > 1)
+                        {
+                            int **temp = new int*[vprims];
+                            for (int iter = 0; iter < vprims; iter++)
+                                temp[iter] = new int[vprims];
+                            // define sub-matrix in the MST
+                            for (int x = 0; x < vprims; x++)
+                                for (int y = 0; y < vprims; y++)
+                                    if (x == y)
+                                        temp[x][y] = 0;
+                                    else
+                                        temp[x][y] = temp[y][x] = adj_matrix[primsVertices[x]][primsVertices[y]];   // symmetry matrix
+                            
+                            //DO PRIM to find MST of the sub-matrix (sub-graph) which is the LB cost.
+                            lowerBoundEstimation = prims(temp, vprims); //MST: PRIM algo.
+                            for (int iter = 0; iter < vprims; iter++)
+                                delete[] temp[iter];
+                            delete[] temp;
+                        }
+                        else //just in case if only 1 city here, the cases is i = 0, where the starting city is the only one remaining (i must be 0, otherwise, the size of vprims = 2 at least).
+                            lowerBoundEstimation = 0; //thus, no LB cost (starting city to starting city).
+                        
+                        //Now, after finding the LB cost, update the estimated LB cost to the current cost so that, can have an esitmation of how good the current solution is.
+                        int costEstimation = costTemp + lowerBoundEstimation;
+                        // Code for lb ends
+                        
+                        // decide whether or not keep this updated current solution (compared to the best solution so far)
+                        if (costEstimation < best_solution.cost) // if the current solution is good, then, keep it
+                        {
+                            //get a copy of the current solution and update path info, cost info, and # of cities have been visited info.
+                            Path child;
+                            child.init();
+                            std::copy(current_solution.path, current_solution.path + MAXSIZE, child.path);
+                            child.cost = costEstimation;
+                            child.path[current_solution.number_visit_city] = i;
+                            child.number_visit_city = current_solution.number_visit_city + 1;
+                            
+                            // if all nodes have been visited, but the last city cannot go back to the starting city, this is not the complete solution and set the cost = -1 as a flag.
+                            //
+                            if (child.number_visit_city == MAXSIZE)
+                                if (adj_matrix[0][child.path[MAXSIZE - 1]] == INF)
+                                    child.cost = -1; //a flag that this solution is not feasible and will be removed.
+                            pq.push(child); //push back into priority_queue for futher update (partial solution) or update best solution (complete solution)
+                        }
                     }
-                }
             }
             
             
@@ -509,7 +486,7 @@ int main(int argc, char *argv[])
     //cout << "Ver  : " << MAXSIZE << endl;                 // graph size
     
     //cout << "Sol  : ";
-    //best_solution.toString();
+    best_solution.toString();
     //cout << " Best Cost Variable: " << best_solution.cost << endl;    // solution path and total cost
     
     //getchar();
@@ -524,25 +501,25 @@ int main(int argc, char *argv[])
 int prims(int **A, int n) //MST Prim algo.
 {
     if (n == 1) //only one node in the graph, exit
-    return 0;
+        return 0;
     
     int i, j, numberOfEdges = 1, min, totalCost = 0, y;
     bool *visited = new bool[n]; //visited list
     for (i = 0; i < n; i++)
-    visited[i] = false;
+        visited[i] = false;
     visited[0] = true;
     while (numberOfEdges < n)
     {
         min = INF;
         for (i = 0; i < n; i++)         // trace the node that has been visited
-        if (visited[i] == true)
-        for (j = 0; j < n; j++) // trace the node that has not been visited
-        if (visited[j] == false)
-        if (min > A[i][j]) //find the smallest cost edge (or arc for directed graph) and add it to the visited list.
-        {
-            min = A[i][j];
-            y = j;
-        }
+            if (visited[i] == true)
+                for (j = 0; j < n; j++) // trace the node that has not been visited
+                    if (visited[j] == false)
+                        if (min > A[i][j]) //find the smallest cost edge (or arc for directed graph) and add it to the visited list.
+                        {
+                            min = A[i][j];
+                            y = j;
+                        }
         visited[y] = true;
         totalCost = totalCost + min; //then, update cost.
         numberOfEdges++; //update # of edge, edge = # of node - 1 for a tree.

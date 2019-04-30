@@ -568,7 +568,7 @@ int main(int argc, char *argv[])
 
 
         }
-        MPI_Finalize();
+        //MPI_Finalize();
     }
 
     //cout << "Ver  : " << MAXSIZE << endl;                 // graph size

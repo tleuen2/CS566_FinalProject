@@ -309,14 +309,14 @@ int main(int argc, char *argv[])
 
             //for(int i = 0; i < size; i++)
             //{
-                MPI_Bcast(&best_path_list[0], 1, MPI_Path, 0, MPI_COMM_WORLD);
+                MPI_Bcast(&bsomeonesSolution, 1, MPI_Path, 0, MPI_COMM_WORLD);
             //}
 
             //for(int j = 0; j < size; j++)
             //{
             //    if(best_path_list[j].is_solution() && (best_path_list[j].cost < best_solution.cost))
             //    {
-                    best_solution = best_path_list[0];
+                    best_solution = someonesSolution;
             //    }
             //}
 

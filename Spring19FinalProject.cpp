@@ -113,6 +113,8 @@ int main(int argc, char **argv)
 	// make datatype for path
 	Path sample;						// the initial partial solution
 	sample.init();
+
+	// Make new MPI datatype
 	MPI_Datatype MPI_Path;			// the new data type
 	MPI_Datatype type[3] = {MPI_INT, MPI_INT, MPI_INT};
 	MPI_Aint disp[3];
@@ -124,7 +126,7 @@ int main(int argc, char **argv)
 	{
 		1,			// numberOfVisitedNode
 		1,			// cost
-		GRAPHSIZE	// input matrix
+		GRAPHSIZE	// input matrix (total elements)
 	};
 	MPI_Type_create_struct(3,			// [in] number of blocks (integer), also number of entries in the next three parameters
 						   blockLength,	// [in] number of elements in each block (array of integer)
@@ -132,7 +134,11 @@ int main(int argc, char **argv)
 						   type,		// [in] type of elements in each block (array of handles to datatype objects)
 						   &MPI_Path	// [out] new datatype (handle)
 						  );			// create an MPI datatype from a general set of datatypes, displacements, and block sizes
+	
+	
 	MPI_Type_commit(&MPI_Path);			// commit the data type
+
+
 	// define initial best solution
 	Path bestSolution;		// global best solution
 	bestSolution.numberOfVisitedNode = GRAPHSIZE;
@@ -144,11 +150,18 @@ int main(int argc, char **argv)
 	}
 	bestSolution.cost += Adj[GRAPHSIZE - 1][0];
 	//cout << bestSolution.cost << endl;	// intial best solution debugging passed
+
+
 	if (size > 1)
 	{
 		// randomly generate the master processor
+		// wouldn't they all get a differrent master !!!!
+
 		srand(time(NULL));
 		master = rand() % size;
+
+		// WTF?
+
 		// intial data partitioning
 		distStart = MPI_Wtime();
 		int setPartialSolutionSize = size;	// set the intial input data partition size
@@ -157,18 +170,19 @@ int main(int argc, char **argv)
 		// WHY???
 		while (partialSolutionSize <= setPartialSolutionSize && intialLevel < GRAPHSIZE)	// determine the level of intial partial solution
 		{
-			// Caculate the number of possible solutions. 
 			partialSolutionSize *= (GRAPHSIZE - intialLevel - 1);
 			intialLevel++;
 		}
-		// WHY?
 
+		// WHY ???
 		Path solution;
 		solution.init();
 		for (int i = 1; i <= intialLevel; i++)	// initialize the partial solution path
 			solution.path[i] = i;
 		// Subtract one from the last item in the path, wtf?
 		solution.path[intialLevel]--;
+
+
 		if (rank == master)		// master command
 		{
 			while (count != size)	// after the interations, solution contains the immediate next partial solution path, which will be sent to one of the slaves
@@ -270,9 +284,13 @@ doAgain:
 					for (int i = 0; i < GRAPHSIZE; i++)	// search all nodes
 						if (Adj[node.path[node.numberOfVisitedNode - 1]][i] != INF && !node.hasVisited(i))	// for an unvisited node
 						{
+							// Cost A calculation
 							int lowerBoundEstimation, costTemp = 0;	// path cost is a temp
 							for (int pathi = 0; pathi < node.numberOfVisitedNode - 1; pathi++)
 								costTemp += Adj[node.path[pathi]][node.path[pathi + 1]];
+							// Cost(A)
+
+
 							costTemp += Adj[node.path[node.numberOfVisitedNode - 1]][i];
 							vector<int> primsVertices;	// set of all nodes in the MST
 							for (int city = 0; city < GRAPHSIZE; city++)	// get all nodes that will be involved into MST
@@ -297,6 +315,7 @@ doAgain:
 								delete[] temp;
 							}
 							else
+								// shouldn't this be the cost of hopping to the next city?
 								lowerBoundEstimation = 0;
 							int costEstimation = costTemp + lowerBoundEstimation;
 							// Code for lb ends
@@ -308,6 +327,7 @@ doAgain:
 								child.cost = costEstimation;
 								child.path[node.numberOfVisitedNode] = i;
 								child.numberOfVisitedNode = node.numberOfVisitedNode + 1;
+								// WHY ???
 								if (child.numberOfVisitedNode == GRAPHSIZE)	// all nodes have been visited
 									if (Adj[0][child.path[GRAPHSIZE - 1]] == INF)
 										child.cost = -1;
@@ -323,10 +343,10 @@ doAgain:
 				goto doAgain;
 			}
 		}
-		else
+		else // If we are in the master
 		{
 			MPI_Status request_Status;
-			while (count <= partialSolutionSize)
+			while (count <= partialSolutionSize) // Check if all data sets have been sent out
 			{
 				int temp;
 				//MPI_Probe(MPI_ANY_SOURCE, 4, MPI_COMM_WORLD, &request_Status);

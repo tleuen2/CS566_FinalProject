@@ -297,20 +297,22 @@ int main(int argc, char *argv[])
             //pop out the smallest cost solution so far,
             //and after adding the next sub-path (next city),
             //need to push this updated solution back to the queue and update the priority (cost based order)
-            Path someonesSolution;
             int cost1;
             for(int m=0; m<size; m++){
                 if(m!=rank){
                     //int *cost1 = (int*)malloc(sizeof(int));
+                    Path someonesSolution;
                     MPI_Irecv(&someonesSolution, 1, MPI_Path, m, 0, MPI_COMM_WORLD, &request);
                     if(someonesSolution.cost != 0){
                         //Yeah someone just sent me something, lets check if i can use that in my calculation
-                        printf("I received a better result with cost %d and I am rank%d\n",someonesSolution.cost, rank);
-                        someonesSolution.toString();
+                        if(someonesSolution.cost < best_solution.cost){
+                            best_solution = someonesSolution;
+                        }
                     }
-                    MPI_Barrier(MPI_COMM_WORLD);
                 }
+                MPI_Barrier(MPI_COMM_WORLD);
             }
+            
             if (current_solution.cost >= best_solution.cost) // if the cost is greater than the best solution (so far) cost, prune it directly.
                 continue;
             
@@ -321,11 +323,15 @@ int main(int argc, char *argv[])
                 //                    cout << current_solution.path[i] << endl;
                 //                }
                 best_solution = current_solution;
-                printf("Rank - %d current best solution\n", rank);
+                //printf("Rank - %d current best solution\n", rank);
                 for(int m=0; m<size; m++){
                     if(m!=rank){
-                        printf("Sending the cost %d to rank %d\n", best_solution.cost, m);
-                        buffer[m] = best_solution;
+                        //printf("Sending the cost %d to rank %d\n", best_solution.cost, m);
+                        buffer[m].cost = best_solution.cost;
+                        buffer[m].number_visit_city = best_solution.number_visit_city;
+                        for(int i=0; i<MAXSIZE; i++){
+                            buffer[m].path[i] = best_solution.path[i];
+                        }
                         MPI_Ssend(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
                     }
                 }

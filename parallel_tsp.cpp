@@ -309,7 +309,9 @@ int main(int argc, char *argv[])
                         //Yeah someone just sent me something, lets check if i can use that in my calculation
                         if(someonesSolution.cost < best_solution.cost){
                             printf("I recieved a better solution! My new best is %d\n", someonesSolution.cost);
-                            best_solution = someonesSolution;
+                            best_solution.cost = someonesSolution.cost;
+                            best_solution.number_visit_city = someonesSolution.number_visit_city;
+                            std::copy(someonesSolution.path, someonesSolution.path + MAXSIZE, best_solution.path);
                         }
                     }
                 }

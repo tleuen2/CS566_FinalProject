@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include "mpi.h"
 #include <unistd.h>
+#include <cstring>
 
 
 using namespace std;

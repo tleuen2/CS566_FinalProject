@@ -324,6 +324,9 @@ int main(int argc, char *argv[])
             //check current solution if it is better than the current best solution so far, update the best solution.
             if (current_solution.is_solution()) // cost = -1 means, this solution is not feasible (cannot back to the starting city)
             {
+                printf("HI! My rank is %d and my current solution is \n", rank);
+                current_solution.toString();
+                printf("_____________________________________________\n");
                 //                for (int i = 0; i < MAXSIZE; i++){
                 //                    cout << current_solution.path[i] << endl;
                 //                }

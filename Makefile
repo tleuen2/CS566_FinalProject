@@ -1,5 +1,9 @@
 PTSP:
-	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp parallel_tsp.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_6 parallel_tsp_6_Input6.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_8 parallel_tsp_8_Input8.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_15 parallel_tsp_15_Input15.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_16 parallel_tsp_16_Input16.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_28 parallel_tsp_28_Input28.cpp
 TSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o ptsp tsp.cpp
 test:

@@ -9,4 +9,8 @@
 #PBS -l nodes=1:ppn=4
 
 module load tools/mpich2-1.5-gcc
-mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp >> test_1.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_6 >> test_6.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_8 >> test_8.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_15 >> test_15.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_16 >> test_16.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_28 >> test_28.out

@@ -102,6 +102,13 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     //MPI_Finalize();
+
+    // make datatype for path
+	Path sample;						// the initial partial solution
+	sample.init();
+	MPI_Datatype MPI_Path;			// the new data type
+	MPI_Datatype type[3] = {MPI_INT, MPI_INT, MPI_INT};
+	MPI_Aint disp[3];
     // Displacement from the root
 	disp[0] = int(&sample.numberOfVisitedNode) - int(&sample);	// the memory location w.r.t structure root to store varibale numberOfVisitedNode
 	disp[1] = int(&sample.cost) - int(&sample);					// the memory location w.r.t structure root to store varibale cost

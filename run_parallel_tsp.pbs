@@ -6,7 +6,7 @@
 #PBS -m abe
 #PBS -M tleuen2@uic.edu
 #PBS -d /classes/csece566/tleuen2/CS566_FinalProject
-#PBS -l nodes=1:ppn=1
+#PBS -l nodes=1:ppn=4
 
 module load tools/mpich2-1.5-gcc
 mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp >> test_2.out

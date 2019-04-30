@@ -440,6 +440,7 @@ int main(int argc, char *argv[])
 
 
         }
+        MPI_Finalize();
     }else{
         //-----------------------------------------PART 2------------------------------------------//
         //-------------------------------------SEQ TSB W/ B&B using PRIM (MST) for LB estimation---//

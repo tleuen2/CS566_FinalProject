@@ -36,11 +36,11 @@ struct Path
     Path(){}
 
     // Copy constructor
-    Path(Path old)
+    Path::Path(Path& p)
     {
-        this.number_visit_city = old.number_visit_city;
-        this.cost = old.cost;
-        std::copy(old.path, old.path + MAXSIZE, this.path);
+        number_visit_city = p.number_visit_city;
+        cost = p.cost;
+        std::copy(p.path, p.path + MAXSIZE, path);
 
     }
 
@@ -507,22 +507,22 @@ void start_partition_phase(int partial_solution_size, int size_of_processors, in
     int temp = number_of_partial_solution;
     for(int w = 0; w < number_of_partial_solution; w++)
     {     
-        while(temp % size != 0)
+        while(temp % size_of_processors != 0)
         {
             temp++;
         }
-        max_local_solutions = temp / size;
+        max_local_solutions = temp / size_of_processors;
 
         if(num_of_solutions_so_far > max_local_solutions)
         {
             continue;
         }
-        if(w == (rank + (size * num_of_solutions_so_far)))
+        if(w == (rank + (size_of_processors * num_of_solutions_so_far)))
         {
             // This is a local solution for this rank
-            Path outNode = Path(tempInput->top());
+            Path outNode = tempInput->top();
 
-            std::copy(outNode.path, outNode.path + MAXSIZE, outNode.path);
+            //std::copy(outNode.path, outNode.path + MAXSIZE, outNode.path);
 
             myQueue->push(outNode);
             tempInput->pop();

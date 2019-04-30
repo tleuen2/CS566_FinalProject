@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#PBS -l walltime=10:00:00
+#PBS -N Homework3
+#PBS -q edu_shared
+#PBS -m abe
+#PBS -M tleuen2@uic.edu
+#PBS -d /classes/csece566/tleuen2/CS566_FinalProject
+#PBS -l nodes=1:ppn=4
+
+module load tools/mpich2-1.5-gcc
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp >> test_1.out

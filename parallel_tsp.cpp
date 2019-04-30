@@ -17,7 +17,7 @@
 
 using namespace std;
 
-#define filename "Input8.txt"
+#define filename "Input28.txt"
 #define INF 3000000
 #define MAXSIZE 8
 

@@ -308,6 +308,7 @@ int main(int argc, char *argv[])
                     if(someonesSolution.cost != 0){
                         //Yeah someone just sent me something, lets check if i can use that in my calculation
                         if(someonesSolution.cost < best_solution.cost){
+                            printf("I recieved a better solution! My new best is %d\n", someonesSolution.cost);
                             best_solution = someonesSolution;
                         }
                     }

@@ -170,6 +170,7 @@ int main(int argc, char *argv[])
     const char *delim = " "; //to seperate the information from one line into different sub-string
     char *string; // store the current line from reading the input file
     char *token; //the sub-string with splited by the space " ". e.g., "1 2 3" -> "1", "2", "3"
+    Path best_path_list[size];
 
     //if file does not exist, warning and exit
     if ((fp = fopen(filename, "r")) == NULL) {
@@ -306,24 +307,38 @@ int main(int argc, char *argv[])
             Path someonesSolution;
             someonesSolution.init();
 
-            for(int m=0; m<size; m++){
-                someonesSolution.init();
-                if(m!=rank){
-                    //int *cost1 = (int*)malloc(sizeof(int));
-                    MPI_Irecv(&someonesSolution, 1, MPI_Path, m, 0, MPI_COMM_WORLD, &request);
-                    //MPI_Wait(&request, &status);
-                    //printf("Received solution with cost %d from %d\n", cost1, m);
-                    if(someonesSolution.cost != 0){
-                        //Yeah someone just sent me something, lets check if i can use that in my calculation
-                        if(someonesSolution.cost < best_solution.cost){
-                            //printf("Received solution with cost %d from %d\n", someonesSolution.cost, m);
-                            best_solution.cost = someonesSolution.cost;
-                            //printf("Proceeding");
-                            //someonesSolution.toString();
-                        }
-                    }
+            for(int i = 0; i < size; i++)
+            {
+                MPI_Bcast(&best_path_list[i], 1, MPI_Path, i, MPI_COMM_WORLD);
+            }
+
+            for(int j = 0; j < size; j++)
+            {
+                if(best_path_list[j].is_solution() && (best_path_list[j].cost < best_solution.cost))
+                {
+                    best_solution = best_path_list[j];
                 }
             }
+
+
+            // for(int m=0; m<size; m++){
+            //     someonesSolution.init();
+            //     if(m!=rank){
+            //         //int *cost1 = (int*)malloc(sizeof(int));
+            //         MPI_Irecv(&someonesSolution, 1, MPI_Path, m, 0, MPI_COMM_WORLD, &request);
+            //         //MPI_Wait(&request, &status);
+            //         //printf("Received solution with cost %d from %d\n", cost1, m);
+            //         if(someonesSolution.cost != 0){
+            //             //Yeah someone just sent me something, lets check if i can use that in my calculation
+            //             if(someonesSolution.cost < best_solution.cost){
+            //                 //printf("Received solution with cost %d from %d\n", someonesSolution.cost, m);
+            //                 best_solution.cost = someonesSolution.cost;
+            //                 //printf("Proceeding");
+            //                 //someonesSolution.toString();
+            //             }
+            //         }
+            //     }
+            // }
             //printf("Rank %d Proceeding on %d\n", rank, iter);
             //MPI_Barrier(MPI_COMM_WORLD); //This barrier causes output from only one processor and the reamining processors just stop
             if (current_solution.cost >= best_solution.cost) // if the cost is greater than the best solution (so far) cost, prune it directly.
@@ -336,14 +351,15 @@ int main(int argc, char *argv[])
                 //                    cout << current_solution.path[i] << endl;
                 //                }
                 best_solution = current_solution;
-                //printf("Rank - %d current best solution\n", rank);
-                for(int m=0; m<size; m++){
-                    if(m!=rank){
-                        //printf("Sending the cost %d to rank %d\n", best_solution.cost, m);
-                        buffer[m] = best_solution;
-                        MPI_Ssend(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
-                    }
-                }
+                best_path_list[rank] = best_solution;
+                // //printf("Rank - %d current best solution\n", rank);
+                // for(int m=0; m<size; m++){
+                //     if(m!=rank){
+                //         //printf("Sending the cost %d to rank %d\n", best_solution.cost, m);
+                //         buffer[m] = best_solution;
+                //         MPI_Ssend(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
+                //     }
+                // }
                 //MPI_Barrier(MPI_COMM_WORLD);
                 continue;
             }

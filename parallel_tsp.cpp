@@ -252,6 +252,71 @@ int main(int argc, char *argv[])
     bool shouldIWait = true;
     int zeroFlag[size];
     Path someonesSolution;
+
+
+
+
+    //MPI_Barrier(MPI_COMM_WORLD);
+
+    if(size > 1){
+        //Parallel implementation goes here
+        //Get the seeds as per rank
+        int partial_solution_size = 0;
+        start_partition_phase(partial_solution_size, size, MAXSIZE, rank, &pq, adj_matrix);
+        //printf("Called the start phase");
+        //        while(!pq.empty()){
+        //            //printf("Hello: rank %d\n",rank);
+        //            Path current = pq.top();
+        //            //current.toString();
+        //            pq.pop();
+        //        }
+        //Display the seeds
+        //-----------------------------------------PART 2------------------------------------------//
+        //-------------------------------------SEQ TSB W/ B&B using PRIM (MST) for LB estimation---//
+        //SEQ-TSP w/ B&B, where the lower-bound cost is comuputed by using MST (minimum spanning tree) by PRIM algo.
+
+        //Path temp_solution; //the temp solution is stored here (temp_solution is assuming starting from city 1 (index in matrix = 0))
+        //temp_solution.init(); //initilzation
+
+        //cout << "temp cost: " << temp_solution.cost << endl;
+
+        // using priority queue (increasing order)
+        // so that, we only explore the partial solution with the smallest cost so far.
+        //pq.push(temp_solution);
+
+        // this for loop compute the cost for 0 -> 1 ->2 -> ... n-1
+        for (int i = 0; i < MAXSIZE-1; i++)
+        {
+            best_solution.path[i] = i; //the order of visited for each city
+            best_solution.cost += adj_matrix[i][i + 1]; //adding the cost for city i -> i+1 (i+1 is up to n-1)
+        }
+        best_solution.path[MAXSIZE-1]=MAXSIZE-1;
+        best_solution.cost += adj_matrix[MAXSIZE - 1][0]; //adding the cost for (n-1 -> 0)
+
+        //cout << "best cost: " << best_solution.cost << endl;
+        //best_solution.toString();
+
+        // Now, starting the TSP B&B processing
+        int iter = 0;
+        while (!pq.empty()) // if there still exists some partial solution are not explored complete, keep check the result
+        {
+            iter++;
+            //printf("Rank %d Iteration %d\n", rank, iter);
+            //MPI_Barrier(MPI_COMM_WORLD);
+            Path current_solution = pq.top();  //everytime, only explore the partial solution with the smallest cost so far
+
+
+            pq.pop();
+            //printf("Rank - %d exploring path\n", rank);
+            //current_solution.toString();
+            //pop out the smallest cost solution so far,
+            //and after adding the next sub-path (next city),
+            //need to push this updated solution back to the queue and update the priority (cost based order)
+            int cost1;
+            int cost2 = 10;
+
+
+
             for(int i=0; i<size; i++){
                 if(rank!=i){
                     MPI_Iprobe(i, 0, MPI_COMM_WORLD, &zeroFlag[i], &status[i]);
@@ -502,3 +567,203 @@ int main(int argc, char *argv[])
                             if (child.number_visit_city == MAXSIZE)
                                 if (adj_matrix[0][child.path[MAXSIZE - 1]] == INF)
                                     child.cost = -1; //a flag that this solution is not feasible and will be removed.
+                            pq.push(child); //push back into priority_queue for futher update (partial solution) or update best solution (complete solution)
+                        }
+                    }
+            }
+
+
+        }
+        //MPI_Finalize();
+    }
+    MPI_Finalize();
+
+    //cout << "Ver  : " << MAXSIZE << endl;                 // graph size
+
+    //cout << "Sol  : ";
+    best_solution.toString();
+    //cout << " Best Cost Variable: " << best_solution.cost << endl;    // solution path and total cost
+
+    //getchar();
+    return 0;
+
+}
+
+//The idea of PRIM is simple.
+//Based on the current visited node so far,
+//span the tree structure by adding the smallest cost arc from the visited nodes group to the un-visited nodes group
+//and thus, visited more nodes, until all nodes are visited
+int prims(int **A, int n) //MST Prim algo.
+{
+    if (n == 1) //only one node in the graph, exit
+        return 0;
+
+    int i, j, numberOfEdges = 1, min, totalCost = 0, y;
+    bool *visited = new bool[n]; //visited list
+    for (i = 0; i < n; i++)
+        visited[i] = false;
+    visited[0] = true;
+    while (numberOfEdges < n)
+    {
+        min = INF;
+        for (i = 0; i < n; i++)         // trace the node that has been visited
+            if (visited[i] == true)
+                for (j = 0; j < n; j++) // trace the node that has not been visited
+                    if (visited[j] == false)
+                        if (min > A[i][j]) //find the smallest cost edge (or arc for directed graph) and add it to the visited list.
+                        {
+                            min = A[i][j];
+                            y = j;
+                        }
+        visited[y] = true;
+        totalCost = totalCost + min; //then, update cost.
+        numberOfEdges++; //update # of edge, edge = # of node - 1 for a tree.
+    }
+    return totalCost;
+}
+
+// the idea of start_partition_phase is (used in Owen's code)
+// need obtain enough partial solution for parallel version
+// so that, each processor can have their own starting point
+// in other words, each processor has their own sub-solution space to be explored
+// note that, it is possible that, some processor will have more initial solutions (based on the way of implementation)
+//
+// e.g., for cities = 16, two initial cities are known as 0->1 for the first processor
+// then, this partial solution is path{0, 1} for this processor
+// the order inside is the order of visiting cities
+// similarly, for the second processor, the two cities are 0->2
+// the corresponding partial solution is path{0, 2}
+
+
+//-----------------------------------------PART 3------------------------------------------//
+//-------------------------------------udea of starting partition_phase for parallel TSP---//
+
+void start_partition_phase(int partial_solution_size, int size_of_processors, int size_input, int rank,
+                           priority_queue<Path, vector<Path>, NodeCompare>  *myQueue, float adj_matrix[MAXSIZE][MAXSIZE])
+{
+    priority_queue<Path, vector<Path>, NodeCompare> tempBuffer1;
+    priority_queue<Path, vector<Path>, NodeCompare> tempBuffer2;
+    priority_queue<Path, vector<Path>, NodeCompare>  *tempInput;
+    priority_queue<Path, vector<Path>, NodeCompare>  *tempOutput;
+    int totalCount = 0;
+    bool Buffer1 = true;
+    //goal: find out how many cities should be had in the partial solution so that:
+    // # of partial solution > # of processors
+    // NOTE: need to check if the # of partial solution (a function of size_input) is less than the size of processors
+    // in other words, the input graph size is too small, or the # of processors is unnecessarly large
+    // Get the intial paths and add them to the temporary queue
+    for(int k = 0; k < size_input; k++)
+    {
+        Path temp;
+        temp.init();
+
+        temp.path[temp.number_visit_city - 1] = k;
+
+        tempBuffer1.push(temp);
+        totalCount++;
+    }
+
+    int number_of_partial_solution = totalCount;
+    partial_solution_size = 1;
+    while (number_of_partial_solution < size_of_processors && partial_solution_size < size_input) //16proc20city
+    {
+        number_of_partial_solution *= (size_input - partial_solution_size - 1);
+        partial_solution_size++;
+    }
+
+    // Generate the partial paths
+    while(totalCount < number_of_partial_solution)
+    {
+        if(Buffer1)
+        {
+            tempInput = &tempBuffer1;
+            tempOutput = &tempBuffer2;
+        }
+        else
+        {
+            tempInput = &tempBuffer2;
+            tempOutput = &tempBuffer1;
+        }
+        int tempInputSize = tempInput->size();
+        for(int i = 0; i < tempInputSize; i++)
+        {
+            Path node = tempInput->top();
+            tempInput->pop();
+
+            for(int j = 0; j < size_input; j++)
+            {
+                if(!node.visited(j))
+                {
+                    //get a copy of the current solution and update path info, cost info, and # of cities have been visited info.
+                    Path newNode;
+                    newNode.init();
+                    std::copy(node.path, node.path + MAXSIZE, newNode.path);
+                    newNode.cost = node.cost;
+                    newNode.path[node.number_visit_city] = j;
+                    newNode.number_visit_city = node.number_visit_city + 1;
+                    if(newNode.number_visit_city > 1)
+                    {
+                        for(int i = 0; i < MAXSIZE - 1; i++)
+                        {
+                            if(newNode.path[i] != -1)
+                            {
+                                newNode.cost += adj_matrix[newNode.path[i]][newNode.path[i + 1]];
+                            }
+                        }
+                    }
+                    tempOutput->push(newNode);
+                }
+            }
+        }
+        Buffer1 = !Buffer1;
+    }
+
+    // Give all of the processors their intial set of partial solutions.
+    //cout << number_of_partial_solution << " - Partial Solutions" << endl;
+    if(Buffer1)
+    {
+        tempInput = &tempBuffer1;
+        tempOutput = &tempBuffer2;
+    }
+    else
+    {
+        tempInput = &tempBuffer2;
+        tempOutput = &tempBuffer1;
+    }
+    int max_local_solutions;
+    int num_of_solutions_so_far = 0;
+    int temp = number_of_partial_solution;
+    for(int w = 0; w < number_of_partial_solution; w++)
+    {
+        Path outNode = tempInput->top();
+        while(temp % size_of_processors != 0)
+        {
+            temp++;
+        }
+        max_local_solutions = temp / size_of_processors;
+
+        if(num_of_solutions_so_far > max_local_solutions)
+        {
+            continue;
+        }
+        if(w == (rank + (size_of_processors * num_of_solutions_so_far)))
+        {
+            // This is a local solution for this rank
+
+
+            //std::copy(outNode.path, outNode.path + MAXSIZE, outNode.path);
+
+            myQueue->push(outNode);
+            num_of_solutions_so_far++;
+        }
+        tempInput->pop();
+
+    }
+
+    // Now, number_of_partial_solution is the total number of initial solution will be
+    // also, partial_solution_size is the # of cities in each partial solution
+
+    //after known how many cities should be in the partial solution at the beginning, each processor will start to obtain their own initial solutions
+    // you can now implement your own way to do the partition processing
+}
+

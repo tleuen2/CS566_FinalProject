@@ -341,7 +341,7 @@ int main(int argc, char *argv[])
                     if(m!=rank){
                         //printf("Sending the cost %d to rank %d\n", best_solution.cost, m);
                         buffer[m] = best_solution;
-                        MPI_Send(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
+                        MPI_Ssend(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
                     }
                 }
                 //MPI_Barrier(MPI_COMM_WORLD);

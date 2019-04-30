@@ -14,3 +14,4 @@ mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_8 >> test_8_8proc.o
 mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_15 >> test_15_8proc.out
 mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_16 >> test_16_8proc.out
 mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_28 >> test_28_8proc.out
+

@@ -110,6 +110,7 @@ int main(int argc, char *argv[])
     MPI_Datatype type[3] = {MPI_INT, MPI_INT, MPI_INT};
     MPI_Aint disp[3];
     MPI_Aint base;
+    MPI_Request request;
     // Displacement from the root
     MPI_Get_address(&sample, disp);
     MPI_Get_address(&sample.cost, disp + 1);
@@ -277,7 +278,7 @@ int main(int argc, char *argv[])
         //best_solution.toString();
         
         // Now, starting the TSP B&B processing
-        
+        MPI_Barrier(MPI_COMM_WORLD);
         while (!pq.empty()) // if there still exists some partial solution are not explored complete, keep check the result
         {
             Path current_solution = pq.top();  //everytime, only explore the partial solution with the smallest cost so far
@@ -288,6 +289,16 @@ int main(int argc, char *argv[])
             //pop out the smallest cost solution so far,
             //and after adding the next sub-path (next city),
             //need to push this updated solution back to the queue and update the priority (cost based order)
+            Path someonesSolution;
+            int cost1;
+            MPI_Irecv(&cost1, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &request);
+            //MPI_Recv(&someonesSolution.cost, 1, MPI_INT, MPI_ANY_SOURCE, 10, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            if(someonesSolution.cost != 0){
+                //Yeah someone just sent me something, lets check if i can use that in my calculation
+                if(someonesSolution.cost < best_solution.cost){
+                    printf("I received a better result with cost %d\n", someonesSolution.cost);
+                }
+            }
             
             if (current_solution.cost >= best_solution.cost) // if the cost is greater than the best solution (so far) cost, prune it directly.
                 continue;
@@ -302,6 +313,15 @@ int main(int argc, char *argv[])
                 printf("Rank - %d current best solution\n", rank);
                 //best_solution.toString();
                 //cout << "best cost: " << best_solution.cost << endl;
+                //MPI_Send(&best_solution, 1, MPI_Path, 1, 10, MPI_COMM_WORLD);
+                for(int m=0; m<size; m++){
+                    if(m!=rank){
+                        printf("Sending the cost %d to rank %d\n", best_solution.cost, m);
+                        int cost2 = best_solution.cost;
+                        //MPI_Isend(&best_solution.cost, 1, MPI_INT, m, 10, MPI_COMM_WORLD, &request);
+                        MPI_Send(&cost2, 1, MPI_INT, m, MPI_ANY_TAG, MPI_COMM_WORLD);
+                    }
+                }
                 continue;
             }
             

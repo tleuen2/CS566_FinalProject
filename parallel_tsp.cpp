@@ -356,10 +356,10 @@ int main(int argc, char *argv[])
                 //                    cout << current_solution.path[i] << endl;
                 //                }
                 best_solution = current_solution;
-                const int something = 9;
+                int something = 9;
 
                 // Send nine to my neighbor
-                print("\nI am rank %d and I'm sending %d\n", rank, something);
+                printf("\nI am rank %d and I'm sending %d\n", rank, something);
                 MPI_Send(&something, 1, MPI_INT, (rank + 1), 0, MPI_COMM_WORLD);
 
                 //best_path_list[rank] = best_solution;

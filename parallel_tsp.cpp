@@ -16,7 +16,7 @@
 
 using namespace std;
 
-#define filename "/Users/vinay/CLionProjects/FirstCPlusPlus/Input8.txt"
+#define filename "Input8.txt"
 #define INF 3000000
 #define MAXSIZE 8
 
@@ -122,7 +122,8 @@ int main(int argc, char *argv[])
     
     for(int i = 0; i < 3; i++)
     {
-        disp[i] = MPI_Aint_diff(disp[i], base);
+        //disp[i] = MPI_Aint_diff(disp[i], base);
+        disp[i] = (char*) disp[i] - (char*) base;
     }
     
     int blockLength[3] = {1,1, MAXSIZE};

@@ -342,7 +342,7 @@ int main(int argc, char *argv[])
                         for(int i=0; i<MAXSIZE; i++){
                             buffer[m].path[i] = best_solution.path[i];
                         }
-                        MPI_Ssend(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
+                        MPI_Send(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
                     }
                 }
                 MPI_Barrier(MPI_COMM_WORLD);

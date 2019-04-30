@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 
     // Displacement from the root
     MPI_Get_address(&sample, &base);
-    MPI_Get_address(&sample, &disp[0]);
+    MPI_Get_address(&sample.number_visit_city, &disp[0]);
     MPI_Get_address(&sample.cost, &(disp[1]));
     MPI_Get_address(&sample.path[0], &(disp[2]));
 
@@ -324,9 +324,11 @@ int main(int argc, char *argv[])
 
             for(int m=0; m<size; m++){
                 someonesSolution.init();
+                int temp;
                 if(m!=rank){
                     //int *cost1 = (int*)malloc(sizeof(int));
-                    MPI_Irecv(&someonesSolution, 1, MPI_Path, m, 0, MPI_COMM_WORLD, &request);
+                    MPI_Irecv(&temp, 1, MPI_INT, m, 0, MPI_COMM_WORLD, &request);
+                    printf("I just got %d\n", temp);
                     //MPI_Wait(&request, &status);
                     //printf("Received solution with cost %d from %d\n", cost1, m);
                     if(someonesSolution.cost != 0){
@@ -353,12 +355,14 @@ int main(int argc, char *argv[])
                 //                }
                 best_solution = current_solution;
                 best_path_list[rank] = best_solution;
+                int something = 9;
                 //printf("Rank - %d current best solution\n", rank);
                 for(int m=0; m<size; m++){
                     if(m!=rank){
                         //printf("Sending the cost %d to rank %d\n", best_solution.cost, m);
                         buffer[m] = best_solution;
-                        MPI_Ssend(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
+                        printf("I am going to send %d\n", something);
+                        MPI_Ssend(&something, 1, MPI_INT, m, 0, MPI_COMM_WORLD);
                     }
                 }
                 MPI_Barrier(MPI_COMM_WORLD);

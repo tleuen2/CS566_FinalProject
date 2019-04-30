@@ -307,38 +307,39 @@ int main(int argc, char *argv[])
             Path someonesSolution;
             someonesSolution.init();
 
+
             //for(int i = 0; i < size; i++)
             //{
-                MPI_Bcast(&bsomeonesSolution, 1, MPI_Path, 0, MPI_COMM_WORLD);
+            //    MPI_Bcast(&bsomeonesSolution, 1, MPI_Path, 0, MPI_COMM_WORLD);
             //}
 
             //for(int j = 0; j < size; j++)
             //{
             //    if(best_path_list[j].is_solution() && (best_path_list[j].cost < best_solution.cost))
             //    {
-                    best_solution = someonesSolution;
+            //        best_solution = someonesSolution;
             //    }
             //}
 
 
-            // for(int m=0; m<size; m++){
-            //     someonesSolution.init();
-            //     if(m!=rank){
-            //         //int *cost1 = (int*)malloc(sizeof(int));
-            //         MPI_Irecv(&someonesSolution, 1, MPI_Path, m, 0, MPI_COMM_WORLD, &request);
-            //         //MPI_Wait(&request, &status);
-            //         //printf("Received solution with cost %d from %d\n", cost1, m);
-            //         if(someonesSolution.cost != 0){
-            //             //Yeah someone just sent me something, lets check if i can use that in my calculation
-            //             if(someonesSolution.cost < best_solution.cost){
-            //                 //printf("Received solution with cost %d from %d\n", someonesSolution.cost, m);
-            //                 best_solution.cost = someonesSolution.cost;
-            //                 //printf("Proceeding");
-            //                 //someonesSolution.toString();
-            //             }
-            //         }
-            //     }
-            // }
+            for(int m=0; m<size; m++){
+                someonesSolution.init();
+                if(m!=rank){
+                    //int *cost1 = (int*)malloc(sizeof(int));
+                    MPI_Irecv(&someonesSolution, 1, MPI_Path, m, 0, MPI_COMM_WORLD, &request);
+                    //MPI_Wait(&request, &status);
+                    //printf("Received solution with cost %d from %d\n", cost1, m);
+                    if(someonesSolution.cost != 0){
+                        //Yeah someone just sent me something, lets check if i can use that in my calculation
+                        if(someonesSolution.cost < best_solution.cost){
+                            //printf("Received solution with cost %d from %d\n", someonesSolution.cost, m);
+                            best_solution.cost = someonesSolution.cost;
+                            //printf("Proceeding");
+                            //someonesSolution.toString();
+                        }
+                    }
+                }
+            }
             //printf("Rank %d Proceeding on %d\n", rank, iter);
             //MPI_Barrier(MPI_COMM_WORLD); //This barrier causes output from only one processor and the reamining processors just stop
             if (current_solution.cost >= best_solution.cost) // if the cost is greater than the best solution (so far) cost, prune it directly.
@@ -352,15 +353,15 @@ int main(int argc, char *argv[])
                 //                }
                 best_solution = current_solution;
                 best_path_list[rank] = best_solution;
-                // //printf("Rank - %d current best solution\n", rank);
-                // for(int m=0; m<size; m++){
-                //     if(m!=rank){
-                //         //printf("Sending the cost %d to rank %d\n", best_solution.cost, m);
-                //         buffer[m] = best_solution;
-                //         MPI_Ssend(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
-                //     }
-                // }
-                //MPI_Barrier(MPI_COMM_WORLD);
+                //printf("Rank - %d current best solution\n", rank);
+                for(int m=0; m<size; m++){
+                    if(m!=rank){
+                        //printf("Sending the cost %d to rank %d\n", best_solution.cost, m);
+                        buffer[m] = best_solution;
+                        MPI_Ssend(&buffer[m], 1, MPI_Path, m, 0, MPI_COMM_WORLD);
+                    }
+                }
+                MPI_Barrier(MPI_COMM_WORLD);
                 continue;
             }
             //MPI_Barrier(MPI_COMM_WORLD);

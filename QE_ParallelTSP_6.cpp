@@ -13,7 +13,6 @@
 #include "mpi.h"
 #include <unistd.h>
 #include <cstring>
-#define _GLIBCXX_USE_C99 1
 
 using namespace std;
 

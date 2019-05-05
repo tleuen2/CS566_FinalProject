@@ -14,7 +14,6 @@
 #include <unistd.h>
 #include <cstring>
 
-
 using namespace std;
 
 #define filename "Input16.txt"
@@ -127,8 +126,10 @@ int main(int argc, char *argv[])
     MPI_Aint base;
 
     //Configuration specific data
-    int s_QE = stoi(argv[1]);
-    int distance_QE = stoi(argv[2]);
+    int s_QE;// = std::stoi(argv[1]);
+    sscanf(argv[1], "%d", s_QE);
+    int distance_QE;// = std::stoi(argv[2]);
+    sscanf(argv[2], "%d", distance_QE);
 
     // Displacement from the root
     MPI_Get_address(&sample, &base);
@@ -583,7 +584,7 @@ int main(int argc, char *argv[])
                         if(pq.size() < offloadCount*3){
                             continue;
                         }
-                        for(int i=0; i<s_QE-1; i++){
+                        for(int j = 0; j < s_QE - 1; j++){
                             Path pqs_Top = pq.top();
                             tempQ.push(pqs_Top);
                             pq.pop();

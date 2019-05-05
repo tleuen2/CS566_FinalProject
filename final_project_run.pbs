@@ -1,4 +1,4 @@
-#PBS -l walltime = 10:00:00
+#PBS -l walltime=10:00:00
 #PBS -N Final_Project
 #PBS -q edu_shared
 #PBS -m abe

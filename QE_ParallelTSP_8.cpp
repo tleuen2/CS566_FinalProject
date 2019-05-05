@@ -790,8 +790,8 @@ int main(int argc, char *argv[])
         printf("--Config--\n");
         printf("\t--Number of Processors = %d\n", size);
         printf("\t--Input data size - (n * n) matrix - = %d\n", MAXSIZE);
-        printf("\t--S value is %d\n", )
-        printf("--Results--\n", s_QE);
+        printf("\t--S value is %d\n", s_QE);
+        printf("--Results--\n");
         printf("\t--My Best Solution Path = ");
         best_solution.toString();
         printf("\n\t--My Distribution time = %f\n", distEnd-distStart);

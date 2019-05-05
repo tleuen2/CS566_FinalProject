@@ -127,8 +127,8 @@ int main(int argc, char *argv[])
     MPI_Aint base;
 
     //Configuration specific data
-    int s_QE = stoi(argv[1]);
-    int distance_QE = stoi(argv[2]);
+    int s_QE = std::stoi(argv[1]);
+    int distance_QE = std::stoi(argv[2]);
 
     // Displacement from the root
     MPI_Get_address(&sample, &base);

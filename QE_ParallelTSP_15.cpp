@@ -127,9 +127,9 @@ int main(int argc, char *argv[])
 
     //Configuration specific data
     int s_QE;// = std::stoi(argv[1]);
-    sscanf(argv[1], "%d", s_QE);
+    sscanf(argv[1], "%d", &s_QE);
     int distance_QE;// = std::stoi(argv[2]);
-    sscanf(argv[2], "%d", distance_QE);
+    sscanf(argv[2], "%d", &distance_QE);
 
     // Displacement from the root
     MPI_Get_address(&sample, &base);

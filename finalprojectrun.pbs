@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#PBS -l walltime=10:00:00
+#PBS -N Final_Project
+#PBS -q edu_shared
+#PBS -m abe
+#PBS -M tleuen2@uic.edu
+#PBS -d /classes/cdece566/tleuen2/CS566_FinalProject
+
+module load tools/mpich2-1.5-gcc
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 1 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_8 1 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_15 1 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_16 1 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_28 1 1 >> 1Node_Output.out
+
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 2 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_8 2 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_15 2 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_16 2 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_28 2 1 >> 1Node_Output.out
+
+
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 3 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_8 3 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_15 3 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_16 3 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_28 3 1 >> 1Node_Output.out
+
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 4 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_8 4 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_15 4 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_16 4 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_28 4 1 >> 1Node_Output.out
+
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 5 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_8 5 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_15 5 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_16 5 1 >> 1Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./parallel_tsp_28 5 1 >> 1Node_Output.out

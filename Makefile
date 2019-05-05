@@ -1,9 +1,9 @@
-PTSP:
-	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_6 parallel_tsp_6_Input6.cpp
-	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_8 parallel_tsp_8_Input8.cpp
-	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_15 parallel_tsp_15_Input15.cpp
-	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_16 parallel_tsp_16_Input16.cpp
-	mpicxx -DMPICH_SKIP_MPICXX -o parallel_tsp_28 parallel_tsp_28_Input28.cpp
+QEPTSP:
+	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_6 QE_Parallel_TSP_6.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_8 QE_Parallel_TSP_8.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_15 QE_Parallel_TSP_15.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_16 QE_Parallel_TSP_16.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_28 QE_Parallel_TSP_28.cpp
 TSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o ptsp tsp.cpp
 test:
@@ -15,5 +15,5 @@ clean:
 	rm -f error
 	rm test*
 	rm Homework3*
-	rm parallel_tsp_6 parallel_tsp_8 parallel_tsp_4 parallel_tsp_15 parallel_tsp 16
-	rm parallel_tsp_28
+	rm QE_Parallel_TSP_6 QE_Parallel_TSP_8 QE_Parallel_TSP_15 QE_Parallel_TSP_16
+	rm QE_Parallel_TSP_28

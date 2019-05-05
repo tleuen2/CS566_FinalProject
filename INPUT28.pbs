@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#PBS -l walltime=10:00:00
+#PBS -N Final_Project
+#PBS -q edu_shared
+#PBS -m abe
+#PBS -M tleuen2@uic.edu
+#PBS -d /classes/csece566/tleuen2/CS566_FinalProject
+
+module load tools/mpich2-1.5-gcc
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_28 $1 $2 >> Node_Output.out

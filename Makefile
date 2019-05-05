@@ -13,8 +13,8 @@ clean:
 	rm -f test
 	rm -f output
 	rm -f error
-	rm test*
-	rm Homework3*
-	rm QE_Parallel_TSP_6 QE_Parallel_TSP_8 QE_Parallel_TSP_15 QE_Parallel_TSP_16
-	rm QE_Parallel_TSP_28
-	rm Node_Output*
+	rm -f test*
+	rm -f Homework3*
+	rm -f QE_Parallel_TSP_6 QE_Parallel_TSP_8 QE_Parallel_TSP_15 QE_Parallel_TSP_16
+	rm -f QE_Parallel_TSP_28
+	rm -f Node_Output*

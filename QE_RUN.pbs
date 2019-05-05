@@ -9,10 +9,10 @@
 
 
 module load tools/mpich2-1.5-gcc
-mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 1 1 >> Node_Output.out
-mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_8 1 1 >> Node_Output.out
-mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_15 1 1 >> Node_Output.out
-mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_16 1 1 >> Node_Output.out
+#mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 1 1 >> Node_Output.out
+#mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_8 1 1 >> Node_Output.out
+#mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_15 1 1 >> Node_Output.out
+#mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_16 1 1 >> Node_Output.out
 mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_28 1 1 >> Node_Output.out
 
 #mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 2 1 >> Node_Output.out

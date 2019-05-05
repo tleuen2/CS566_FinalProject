@@ -13,7 +13,7 @@
 #include "mpi.h"
 #include <unistd.h>
 #include <cstring>
-
+#define _GLIBCXX_USE_C99 1
 
 using namespace std;
 
@@ -583,7 +583,7 @@ int main(int argc, char *argv[])
                         if(pq.size() < offloadCount*3){
                             continue;
                         }
-                        for(int i=0; i<s_QE-1; i++){
+                        for(int j = 0; j < s_QE - 1; j++){
                             Path pqs_Top = pq.top();
                             tempQ.push(pqs_Top);
                             pq.pop();

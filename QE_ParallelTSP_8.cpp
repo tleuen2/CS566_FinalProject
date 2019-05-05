@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 
     //if file does not exist, warning and exit
     if ((fp = fopen(filename, "r")) == NULL) {
-        printf("\nCannot open file strike any key exit!");
+        //printf("\nCannot open file strike any key exit!");
         exit(1);
     }
 
@@ -340,7 +340,7 @@ int main(int argc, char *argv[])
         int iter = 0;
         distEnd = MPI_Wtime();
         totalStart = MPI_Wtime();
-        printf("1->rank->%d\n", rank);
+        //printf("1->rank->%d\n", rank);
         while (!pq.empty()) // if there still exists some partial solution are not explored complete, keep check the result
         {
             Path current_solution = pq.top();  //everytime, only explore the partial solution with the smallest cost so far
@@ -356,10 +356,10 @@ int main(int argc, char *argv[])
             if(value)
             {
                 if(guysWhoAreDone == size-1){
-                    printf("Breaking the loop and announcing myself as a winner %d\n", rank);
+                    //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
                     break;
                 }
-                printf("***This is the number that have terminated %d\n", guysWhoAreDone);
+                //printf("***This is the number that have terminated %d\n", guysWhoAreDone);
             }
             //guysWhoAreDone = 0;
 
@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
                             }
                             zeroFlag[i] = 0;
                         }else{
-                            printf("Error making TAG0 receive probe for processor %d\n",i);
+                            //printf("Error making TAG0 receive probe for processor %d\n",i);
                         }
                     }
                 }
@@ -395,7 +395,7 @@ int main(int argc, char *argv[])
                     if(rank!=i){
                         if(MPI_Send(&best_solution, 1, MPI_Path, i, 0, MPI_COMM_WORLD) == MPI_SUCCESS){
                         }else{
-                            printf("Error Sending data to processor %d\n",i);
+                            //printf("Error Sending data to processor %d\n",i);
                         }
                     }
                 }
@@ -638,11 +638,11 @@ int main(int argc, char *argv[])
             iter++;
         }
         if(send_termination_message(rank, size, 60)){
-            printf("%s\n", "Send the 60 message properly");
+            //printf("%s\n", "Send the 60 message properly");
         }
         MPI_Barrier(MPI_COMM_WORLD);
         totalEnd = MPI_Wtime();
-        printf("Iteration %d\n", iter);
+        //printf("Iteration %d\n", iter);
         //MPI_Finalize();
     }else{
         int iter=0;
@@ -1052,7 +1052,7 @@ bool send_termination_message(int rank, int num_processors, int sig_num)
         unsigned u_rank = rank;
         if(rank!=i && differAtOneBitPos(u_rank, u_i))
         {
-            printf("I am terminated, snding out the message now, from rank %d\n", rank);
+            //printf("I am terminated, snding out the message now, from rank %d\n", rank);
             MPI_Send(&sendValues[i], 1, MPI_INT, i, sig_num, MPI_COMM_WORLD);
         }
     }

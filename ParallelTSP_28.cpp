@@ -131,6 +131,10 @@ int main(int argc, char *argv[])
     MPI_Get_address(&sample.path[0], &(disp[2]));
     MPI_Get_address(&sample.sender, &(disp[3]));
 
+
+    int numOfNodes;
+    sscanf(argv[3], "%d", &numOfNodes);
+
     for(int i = 0; i < 4; i++)
     {
         //disp[i] = MPI_Aint_diff(disp[i], base);
@@ -775,6 +779,7 @@ int main(int argc, char *argv[])
         printf("--Config--\n");
         printf("\t--Number of Processors = %d\n", size);
         printf("\t--Input data size - (n * n) matrix - = %d\n", MAXSIZE);
+        printf("\t--The number of Nodes = %d\n", numOfNodes);
         printf("--Results--\n");
         printf("\t--My Best Solution Path = ");
         best_solution.toString();

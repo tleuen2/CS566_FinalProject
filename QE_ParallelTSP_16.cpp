@@ -130,6 +130,8 @@ int main(int argc, char *argv[])
     sscanf(argv[1], "%d", &s_QE);
     int distance_QE;// = std::stoi(argv[2]);
     sscanf(argv[2], "%d", &distance_QE);
+    int numOfNodes;
+    sscanf(argv[3], "%d", &numOfNodes);
 
     // Displacement from the root
     MPI_Get_address(&sample, &base);
@@ -791,6 +793,7 @@ int main(int argc, char *argv[])
         printf("\t--Number of Processors = %d\n", size);
         printf("\t--Input data size - (n * n) matrix - = %d\n", MAXSIZE);
         printf("\t--S value is %d\n", s_QE);
+        printf("\t--The number of Nodes = \n", numOfNodes);
         printf("--Results--\n");
         printf("\t--My Best Solution Path = ");
         best_solution.toString();

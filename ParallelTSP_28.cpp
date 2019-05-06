@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 
 
     int numOfNodes;
-    sscanf(argv[3], "%d", &numOfNodes);
+    sscanf(argv[1], "%d", &numOfNodes);
 
     for(int i = 0; i < 4; i++)
     {

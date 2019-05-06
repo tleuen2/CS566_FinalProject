@@ -8,4 +8,4 @@
 #PBS -d /classes/csece566/tleuen2/CS566_FinalProject
 
 module load tools/mpich2-1.5-gcc
-mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 $1 $2 >> Node_Output.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_6 $1 $2 >> 6Matrix.out

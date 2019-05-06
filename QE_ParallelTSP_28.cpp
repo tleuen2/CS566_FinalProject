@@ -491,7 +491,7 @@ int main(int argc, char *argv[])
             for(int i=1; i<size; i++){
                 node_S_QE[i] = node_S_QE[0];
             }
-             if(((iter+1)%5) == 0 && (pq.size() > 2 * size)){
+            if(((iter+1)%5) == 0 && (pq.size() > (2 * size))){
                 for(int i=0; i<size; i++){
                     //node_S_QE[i] = tempQ2.top();
                     node_S_QE[i].sender = rank;

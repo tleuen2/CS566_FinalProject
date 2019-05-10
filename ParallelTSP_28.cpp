@@ -1031,7 +1031,7 @@ bool recieve_termination_message(int rank, int num_processors, int sig_num, int 
 
 bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int *guysWhoAreDone)
 {
-    bool output = false;
+    bool reVal = false;
     int recieveFlags[num_processors];
     MPI_Status status[num_processors];
     for(int i = 0; i < num_processors; i++)
@@ -1044,7 +1044,7 @@ bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *o
                 //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
                 MPI_Recv(output[i], 1, MPI_Path, i, sig_num, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 *guysWhoAreDone += 1;
-                output = true;
+                reVal = true;
             }
             recieveFlags[i] = 0;
         }

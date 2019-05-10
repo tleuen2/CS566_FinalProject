@@ -522,8 +522,11 @@ int main(int argc, char *argv[])
                     //Someone has sent me some work.
                     //So i need to receive it
                     //printf("I am rank %d and receiving from %d\n",rank, tempInt);
-                    if(MPI_Recv(&missedGuysSthNode[missedGuyRank], 1, MPI_Path, tempInt, 37, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS){
-                        pq.push(missedGuysSthNode[missedGuyRank]);
+                    if(MPI_Recv(&missedGuysSthNode[missedGuyRank], 1, MPI_Path, tempInt, 37, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS)
+                    {
+                        Path temp;
+                        temp = missedGuysSthNode[missedGuyRank];
+                        pq.push(temp);
                         //printf("I am rank %d and I received from %d\n",rank, tempInt);
                     }else{
                         //printf("Error making TAG0 receive probe for processor %d\n",i);

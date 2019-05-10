@@ -4,6 +4,7 @@ QEPTSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_15 QE_ParallelTSP_15.cpp
 	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_16 QE_ParallelTSP_16.cpp
 	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_28 QE_ParallelTSP_28.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_32 QE_ParallelTSP_32.cpp
 	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_50 QE_ParallelTSP_50.cpp
 	
 IQEPTSP:
@@ -11,6 +12,7 @@ IQEPTSP:
 	
 FinalProject:
 	mpicxx -DMPICH_SKIP_MPICXX -o FinalProject final_project_28Input.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o FinalProject_32 final_project_32Input.cpp
 	
 PTSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_6 ParallelTSP_6.cpp
@@ -18,6 +20,7 @@ PTSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_15 ParallelTSP_15.cpp
 	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_16 ParallelTSP_16.cpp
 	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_28 ParallelTSP_28.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_32 ParallelTSP_32.cpp
 	
 TSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o ptsp tsp.cpp

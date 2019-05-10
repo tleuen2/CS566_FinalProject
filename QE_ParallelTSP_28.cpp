@@ -277,8 +277,8 @@ int main(int argc, char *argv[])
     priority_queue<Path, vector<Path>, NodeCompare> tempQ2;
     Path qeSendBuffer[size][offloadCount];
     Path qeReceiveBuffer[size][offloadCount];
-    Path node_S_QE[size];
-    Path node_S_QE_ReceiveBuffer[size];
+    // Path node_S_QE[size];
+    // Path node_S_QE_ReceiveBuffer[size];
     int node_S_flag[size];
     int fortyFiveSendBuffer[size];
     int fortyFiveReceiveBuffer[size];
@@ -292,7 +292,6 @@ int main(int argc, char *argv[])
     Path nodesFromTermination[size];
     int TestTermRecieveFlags[size];
     MPI_Status TestTermStatus[size];
-    bool noWork;
 
 
 
@@ -553,7 +552,6 @@ int main(int argc, char *argv[])
             //MPI_Barrier(MPI_COMM_WORLD);
             //Start receiving here 'S'th node of all the cores
             //Code runs with this too.
-            
             for(int i=0; i<size; i++){
                 if(rank!=i){
                     MPI_Iprobe(i, 50, MPI_COMM_WORLD, &node_S_flag[i], &status[i]);
@@ -566,7 +564,6 @@ int main(int argc, char *argv[])
                             Path toSthQ;
                             toSthQ = node_S_QE_ReceiveBuffer[i];
                             sTH_Q.push(toSthQ);
-                            
                         }else{
                             //printf("Error making TAG0 receive probe for processor %d\n",i);
                         }
@@ -607,7 +604,7 @@ int main(int argc, char *argv[])
                     sTH_Q.pop();
                 }
             }
-            //MPI_Barrier(MPI_COMM_WORLD);
+            // //MPI_Barrier(MPI_COMM_WORLD);
 
             //This is check 45 and send the nodes with signal 40.
             for(int i=0; i<size; i++){
@@ -647,13 +644,12 @@ int main(int argc, char *argv[])
 
             //There will be a QE barrier here, B2
             //MPI_Barrier(MPI_COMM_WORLD);
-            noWork = true;
+
             //This is check 40 and receive the nodes in qeReceiveBuffer.
             for(int i=0; i<size; i++){
                 if(rank!=i){
                     MPI_Iprobe(i, 40, MPI_COMM_WORLD, &fortyFlag[i], &status[i]);
                     if(fortyFlag[i] != 0){
-                        noWork = false;
                         //Someone has send me some work.
                         //So i need to receive it
                         //printf("I am rank %d and I am receiving some data from %d\n", rank, i);

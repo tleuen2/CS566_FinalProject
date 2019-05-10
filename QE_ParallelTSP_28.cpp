@@ -277,8 +277,8 @@ int main(int argc, char *argv[])
     priority_queue<Path, vector<Path>, NodeCompare> tempQ2;
     Path qeSendBuffer[size][offloadCount];
     Path qeReceiveBuffer[size][offloadCount];
-    // Path node_S_QE[size];
-    // Path node_S_QE_ReceiveBuffer[size];
+    Path node_S_QE[size];
+    Path node_S_QE_ReceiveBuffer[size];
     int node_S_flag[size];
     int fortyFiveSendBuffer[size];
     int fortyFiveReceiveBuffer[size];

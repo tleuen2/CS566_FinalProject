@@ -380,7 +380,7 @@ int main(int argc, char *argv[])
                         {
                             if(someonesSolution.cost<=best_solution.cost)
                             {
-                                bestSoultionUpdates++
+                                bestSoultionUpdates++;
                                 best_solution = someonesSolution;
                             }
                             zeroFlag[i] = 0;

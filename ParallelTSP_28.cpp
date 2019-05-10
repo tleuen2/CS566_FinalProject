@@ -369,6 +369,7 @@ int main(int argc, char *argv[])
                         if(nodesFromTermination[i].cost < best_solution.cost)
                         {
                             // Terminate
+                            best_solution = nodesFromTermination[i];
                             bestSoultionUpdates = size;
                         }
                     }
@@ -379,14 +380,15 @@ int main(int argc, char *argv[])
 
             
 
-            for(int i = 0; i < size; i++)
+            // for(int i = 0; i < size; i++)
+            // {
+            //     if(nodesFromTermination[i].cost < best_solution.cost)
+            //     {
+            //         best_solution = nodesFromTermination[i];
+            //     }
+            // }
+            if(guysWhoAreDone == size-1)
             {
-                if(nodesFromTermination[i].cost < best_solution.cost)
-                {
-                    best_solution = nodesFromTermination[i];
-                }
-            }
-            if(guysWhoAreDone == size-1){
                 //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
                 break;
             }

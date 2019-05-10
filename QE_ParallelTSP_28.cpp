@@ -379,14 +379,14 @@ int main(int argc, char *argv[])
                 
             }
             //printf("I am rank %d and value is %s\n",rank, value?"true":"false");
-            if(value)
-            {
+            // if(value)
+            // {
                 if(guysWhoAreDone == size-1){
                     //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
                     break;
                 }
                 //printf("***This is the number that have terminated %d\n", guysWhoAreDone);
-            }
+            //}
             //guysWhoAreDone = 0;
 
 

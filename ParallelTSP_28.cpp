@@ -670,7 +670,7 @@ int main(int argc, char *argv[])
         }
 
         // Check if I think I have the global best soltuion
-        if(bestSoultionUpdates > (size / 2))
+        if(bestSoultionUpdates >= 2)
         {
             send_termination_data(rank, size, 60, &best_solution, MPI_Path);
             // if(send_termination_message(rank, size, 60))

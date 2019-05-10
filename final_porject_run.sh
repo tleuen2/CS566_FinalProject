@@ -211,7 +211,7 @@
 #sleep 10
 #qsub FinalProject28INPUT.pbs -F "4 1 4" -l nodes=4:ppn=8
 #sleep 10
-#qsub FinalProject28INPUT.pbs -F "4 1 4" -l nodes=4:ppn=16
+qsub FinalProject28INPUT.pbs -F "4 1 4" -l nodes=4:ppn=16
 #sleep 10
 #sleep 10
 #qsub FinalProject28INPUT.pbs -F "5 1 4" -l nodes=4:ppn=1
@@ -432,7 +432,7 @@
 #sleep 10
 #qsub FinalProject28INPUT.pbs -F "4 1 8" -l nodes=8:ppn=8
 #sleep 10
-qsub FinalProject28INPUT.pbs -F "4 1 8" -l nodes=8:ppn=16
+#qsub FinalProject28INPUT.pbs -F "4 1 8" -l nodes=8:ppn=16
 #sleep 10
 #sleep 10
 #qsub FinalProject28INPUT.pbs -F "5 1 8" -l nodes=8:ppn=1

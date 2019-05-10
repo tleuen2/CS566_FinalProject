@@ -98,7 +98,7 @@ public:
 int prims(int **A, int n); //function of prim-algo for MST.
 void start_partition_phase(int partial_solution_size, int size_of_processors, int size_input, int rank,
                            priority_queue<Path, vector<Path>, NodeCompare>  *myQueue, float adj_matrix[MAXSIZE][MAXSIZE]);
-bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int *guysWhoAreDone);
+bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int *guysWhoAreDone, int who);
 bool send_termination_message(int rank, int num_processors, int sig_num);
 bool recieve_termination_message(int rank, int num_processors, int sig_num, int *guysWhoAreDone);
 void send_termination_data(int rank, int num_processors, int sig_num, Path *toSend, MPI_Datatype MPI_Path);
@@ -290,8 +290,8 @@ int main(int argc, char *argv[])
     int guysWhoAreDone = 0;
     int bestSoultionUpdates = 0;
     Path nodesFromTermination[size];
-    int TestTermRecieveFlags[num_processors];
-    MPI_Status TestTermStatus[num_processors];
+    int TestTermRecieveFlags[size];
+    MPI_Status TestTermStatus[size];
 
 
 
@@ -361,11 +361,11 @@ int main(int argc, char *argv[])
             {
                 if (rank != i) 
                 {
-                    MPI_Iprobe(i, sig_num, MPI_COMM_WORLD, &TestTermRecieveFlags[i], &TestTermStatus[i]);
+                    MPI_Iprobe(i, 60, MPI_COMM_WORLD, &TestTermRecieveFlags[i], &TestTermStatus[i]);
                     if (TestTermRecieveFlags[i] != 0) 
                     {
                         //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
-                        recieve_termination_data(rank, size, 60, &nodesFromTermination[i], MPI_Path, &guysWhoAreDone);
+                        recieve_termination_data(rank, size, 60, &nodesFromTermination[i], MPI_Path, &guysWhoAreDone, i);
                         if(nodesFromTermination[i].cost < best_solution.cost)
                         {
                             // Terminate
@@ -1052,7 +1052,7 @@ bool recieve_termination_message(int rank, int num_processors, int sig_num, int 
     return output;
 }
 
-bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int *guysWhoAreDone)
+bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int *guysWhoAreDone, int who)
 {
     //bool reVal = false;
     //int recieveFlags[num_processors];
@@ -1065,8 +1065,9 @@ bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *o
             //May be i need to receive the fortyfive in some dummy array so as to flush it out of the mpi ecosystem.
            // if (recieveFlags[i] != 0) {
                 //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
-                MPI_Recv(output, 1, MPI_Path, i, sig_num, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(output, 1, MPI_Path, who, sig_num, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 *guysWhoAreDone += 1;
+                return true;
                 //reVal = true;
             //}
            //recieveFlags[i] = 0;

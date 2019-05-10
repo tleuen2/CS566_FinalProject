@@ -298,7 +298,7 @@ int main(int argc, char *argv[])
     int guysWhoAreDone = 0;
     Path node_S_QE_missed[size];
     int missedGuyRank;
-    Path missedGuysSthNode;
+    Path missedGuysSthNode[size];
     int myRepresentative = getRepresentative(rank, size);
 
 
@@ -522,8 +522,8 @@ int main(int argc, char *argv[])
                     //Someone has sent me some work.
                     //So i need to receive it
                     //printf("I am rank %d and receiving from %d\n",rank, tempInt);
-                    if(MPI_Recv(&missedGuysSthNode, 1, MPI_Path, tempInt, 37, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS){
-                        pq.push(missedGuysSthNode);
+                    if(MPI_Recv(&missedGuysSthNode[missedGuyRank], 1, MPI_Path, tempInt, 37, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS){
+                        pq.push(missedGuysSthNode[missedGuyRank]);
                         //printf("I am rank %d and I received from %d\n",rank, tempInt);
                     }else{
                         //printf("Error making TAG0 receive probe for processor %d\n",i);

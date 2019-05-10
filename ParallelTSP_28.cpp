@@ -669,15 +669,39 @@ int main(int argc, char *argv[])
             iter++;
         }
 
-        // Check if I think I have the global best soltuion
-        // if(bestSoultionUpdates >= 2)
-        // {
-            send_termination_data(rank, size, 60, &best_solution, MPI_Path);
-            // if(send_termination_message(rank, size, 60))
-            // {
-            //     //printf("%s\n", "Send the 60 message properly");
-            // }
-        //}
+        while(bestSoultionUpdates <= (size/2))
+        {
+            if(bestSoultionUpdates >= 2)
+            {
+                send_termination_data(rank, size, 60, &best_solution, MPI_Path);
+            }
+            else
+            {
+                for(int i = 0; i < size; i++)
+                {
+                    if (rank != i) 
+                    {
+                        MPI_Iprobe(i, 60, MPI_COMM_WORLD, &TestTermRecieveFlags[i], &TestTermStatus[i]);
+                        if (TestTermRecieveFlags[i] != 0) 
+                        {
+                            //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
+                            //recieve_termination_data(rank, size, 60, &nodesFromTermination[i], MPI_Path, &guysWhoAreDone, i);
+                            MPI_Recv(&nodesFromTermination[i], 1, MPI_Path, i, 60, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                            guysWhoAreDone += 1;
+                            if(nodesFromTermination[i].cost < best_solution.cost)
+                            {
+                                // Terminate
+                                best_solution = nodesFromTermination[i];
+                                bestSoultionUpdates = size;
+                            }
+                        }
+                        TestTermRecieveFlags[i] = 0;
+                    }
+                    
+                }
+            }
+            
+        }
 
         MPI_Barrier(MPI_COMM_WORLD);
         totalEnd = MPI_Wtime();

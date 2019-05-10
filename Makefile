@@ -6,6 +6,9 @@ QEPTSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_28 QE_ParallelTSP_28.cpp
 	mpicxx -DMPICH_SKIP_MPICXX -o QE_Parallel_TSP_50 QE_ParallelTSP_50.cpp
 	
+IQEPTSP:
+	mpicxx -DMPICH_SKIP_MPICXX -o Improved_QE_28 Improved_QE_28.cpp
+	
 PTSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_6 ParallelTSP_6.cpp
 	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_8 ParallelTSP_8.cpp

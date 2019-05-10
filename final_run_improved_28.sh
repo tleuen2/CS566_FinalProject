@@ -428,11 +428,11 @@ qsub Improved_QE_INPUT28.pbs -F "4 1 6" -l nodes=6:ppn=4
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "4 1 8" -l nodes=8:ppn=2
 #sleep 10
-#qsub Improved_QE_INPUT28.pbs -F "4 1 8" -l nodes=8:ppn=4
+qsub Improved_QE_INPUT28.pbs -F "4 1 8" -l nodes=8:ppn=4
 #sleep 10
-#qsub Improved_QE_INPUT28.pbs -F "4 1 8" -l nodes=8:ppn=8
+qsub Improved_QE_INPUT28.pbs -F "4 1 8" -l nodes=8:ppn=8
 #sleep 10
-#qsub Improved_QE_INPUT28.pbs -F "4 1 8" -l nodes=8:ppn=16
+qsub Improved_QE_INPUT28.pbs -F "4 1 8" -l nodes=8:ppn=16
 #sleep 10
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "5 1 8" -l nodes=8:ppn=1
@@ -482,13 +482,13 @@ qsub Improved_QE_INPUT28.pbs -F "4 1 6" -l nodes=6:ppn=4
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=1
 #sleep 10
-qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=2
+#qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=2
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=4
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=8
 #sleep 10
-qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=16
+#qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=16
 #sleep 10
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "5 1 9" -l nodes=9:ppn=1

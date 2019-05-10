@@ -523,6 +523,7 @@ int main(int argc, char *argv[])
                     //So i need to receive it
                     //printf("I am rank %d and receiving from %d\n",rank, tempInt);
                     if(MPI_Recv(&missedGuysSthNode, 1, MPI_Path, tempInt, 37, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS){
+                        pq.push(missedGuysSthNode);
                         //printf("I am rank %d and I received from %d\n",rank, tempInt);
                     }else{
                         //printf("Error making TAG0 receive probe for processor %d\n",i);

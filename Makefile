@@ -9,6 +9,9 @@ QEPTSP:
 IQEPTSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o Improved_QE_28 Improved_QE_28.cpp
 	
+FinalProject:
+	mpicxx -DMPICH_SKIP_MPICXX -o FinalProject final_project_28Input.cpp
+	
 PTSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_6 ParallelTSP_6.cpp
 	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_8 ParallelTSP_8.cpp

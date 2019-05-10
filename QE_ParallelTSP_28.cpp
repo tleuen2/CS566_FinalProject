@@ -14,7 +14,6 @@
 #include <unistd.h>
 #include <cstring>
 
-
 using namespace std;
 
 #define filename "Input28.txt"
@@ -102,6 +101,12 @@ bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *o
 bool send_termination_message(int rank, int num_processors, int sig_num);
 bool recieve_termination_message(int rank, int num_processors, int sig_num, int *guysWhoAreDone);
 void send_termination_data(int rank, int num_processors, int sig_num, Path *toSend, MPI_Datatype MPI_Path);
+// function to check if x is power of 2
+bool isPowerOfTwo(unsigned int x);
+
+// function to check whether the two numbers
+// differ at one bit position only
+bool differAtOneBitPos(unsigned int a, unsigned int b);
 
 int main(int argc, char *argv[])
 {
@@ -121,9 +126,13 @@ int main(int argc, char *argv[])
     MPI_Aint disp[4];
     MPI_Aint base;
 
-    // //Configuration specific data
-    // int s_QE = stoi(argv[1]);
-    // int distance_QE = stoi(argv[2]);
+    //Configuration specific data
+    int s_QE;// = std::stoi(argv[1]);
+    sscanf(argv[1], "%d", &s_QE);
+    int distance_QE;// = std::stoi(argv[2]);
+    sscanf(argv[2], "%d", &distance_QE);
+    int numOfNodes;
+    sscanf(argv[3], "%d", &numOfNodes);
 
     // Displacement from the root
     MPI_Get_address(&sample, &base);
@@ -131,10 +140,6 @@ int main(int argc, char *argv[])
     MPI_Get_address(&sample.cost, &(disp[1]));
     MPI_Get_address(&sample.path[0], &(disp[2]));
     MPI_Get_address(&sample.sender, &(disp[3]));
-
-
-    int numOfNodes;
-    sscanf(argv[1], "%d", &numOfNodes);
 
     for(int i = 0; i < 4; i++)
     {
@@ -189,7 +194,7 @@ int main(int argc, char *argv[])
 
     //if file does not exist, warning and exit
     if ((fp = fopen(filename, "r")) == NULL) {
-        printf("\nCannot open file strike any key exit!");
+        //printf("\nCannot open file strike any key exit!");
         exit(1);
     }
 
@@ -292,8 +297,6 @@ int main(int argc, char *argv[])
     Path nodesFromTermination[size];
     int TestTermRecieveFlags[size];
     MPI_Status TestTermStatus[size];
-    bool noWork;
-
 
 
 
@@ -353,11 +356,6 @@ int main(int argc, char *argv[])
             int cost2 = 10;
 
             //Here we can check for code 60
-            //printf("I am rank %d and checking for termination messages\n",rank);
-
-
-            //bool value = recieve_termination_message(rank, size, 60, &guysWhoAreDone);
-
             for(int i = 0; i < size; i++)
             {
                 if (rank != i) 
@@ -380,23 +378,16 @@ int main(int argc, char *argv[])
                 }
                 
             }
-
-            
-
-            // for(int i = 0; i < size; i++)
-            // {
-            //     if(nodesFromTermination[i].cost < best_solution.cost)
-            //     {
-            //         best_solution = nodesFromTermination[i];
-            //     }
-            // }
-            if(guysWhoAreDone == size-1)
+            //printf("I am rank %d and value is %s\n",rank, value?"true":"false");
+            if(value)
             {
-                //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
-                break;
+                if(guysWhoAreDone == size-1){
+                    //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
+                    break;
+                }
+                //printf("***This is the number that have terminated %d\n", guysWhoAreDone);
             }
-            //printf("***This is the number that have terminated %d\n", guysWhoAreDone);
-
+            //guysWhoAreDone = 0;
 
 
             for(int i=0; i<size; i++){
@@ -404,17 +395,12 @@ int main(int argc, char *argv[])
                     MPI_Iprobe(i, 0, MPI_COMM_WORLD, &zeroFlag[i], &status[i]);
                     if(zeroFlag[i] != 0){
                         someonesSolution.init();
-                        if(MPI_Recv(&someonesSolution, 1, MPI_Path, i, 0, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS)
-                        {
-                            if(someonesSolution.cost<=best_solution.cost)
-                            {
-                                bestSoultionUpdates++;
+                        if(MPI_Recv(&someonesSolution, 1, MPI_Path, i, 0, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS){
+                            if(someonesSolution.cost<=best_solution.cost){
                                 best_solution = someonesSolution;
                             }
                             zeroFlag[i] = 0;
-                        }
-                        else
-                        {
+                        }else{
                             //printf("Error making TAG0 receive probe for processor %d\n",i);
                         }
                     }
@@ -517,26 +503,27 @@ int main(int argc, char *argv[])
             //Broadcast the sth node if needed
             //Code runs with this
             //MPI_Barrier(MPI_COMM_WORLD);
-            Path pqs_Top = pq.top();
-            tempQ.push(pqs_Top);
-            pq.pop();
-            //Now pgs top contains node which needs to be sent to the other guy
+            for(int i=0; i<s_QE-1; i++){
+                Path pqs_Top = pq.top();
+                tempQ.push(pqs_Top);
+                pq.pop();
+            }
             node_S_QE[0] = pq.top();
-            // LOOK HERE
-            //pq.pop();
-
-            Path tempQsTop = tempQ.top();
-            tempQ.pop();
-
+            while(!tempQ.empty()){
+                Path tempQ_top = tempQ.top();
+                pq.push(tempQ_top);
+                tempQ.pop();
+            }
             for(int i=1; i<size; i++){
                 node_S_QE[i] = node_S_QE[0];
             }
-            pq.push(tempQsTop);
-            if(((iter+1)%5) == 0){
+            if(((iter+1)%5) == 0 && (pq.size() > (2 * size))){
                 for(int i=0; i<size; i++){
                     //node_S_QE[i] = tempQ2.top();
                     node_S_QE[i].sender = rank;
-                    if(rank!=i){
+                    unsigned u_i = i;
+                    unsigned u_rank = rank;
+                    if(rank!=i && differAtOneBitPos(u_rank, u_i)){
                         //printf("50 Send of rank %d sending to ran %d\n", rank, node_S_QE[i].sender);
                         if(MPI_Send(&node_S_QE[i], 1, MPI_Path, i, 50, MPI_COMM_WORLD) == MPI_SUCCESS){
                             //printf("I am rank %d and I am broadcasting sth cost as %d\n", rank, node_S_QE[i].cost);
@@ -550,11 +537,14 @@ int main(int argc, char *argv[])
 
 
 
+
             //MPI_Barrier(MPI_COMM_WORLD);
             //Start receiving here 'S'th node of all the cores
             //Code runs with this too.
             for(int i=0; i<size; i++){
-                if(rank!=i){
+                unsigned u_i = i;
+                unsigned u_rank = rank;
+                if(rank!=i && differAtOneBitPos(u_rank, u_i)){
                     MPI_Iprobe(i, 50, MPI_COMM_WORLD, &node_S_flag[i], &status[i]);
                     if(node_S_flag[i] != 0){
                         //Someone has sent me some work.
@@ -605,11 +595,13 @@ int main(int argc, char *argv[])
                     sTH_Q.pop();
                 }
             }
-            // //MPI_Barrier(MPI_COMM_WORLD);
+            //MPI_Barrier(MPI_COMM_WORLD);
 
             //This is check 45 and send the nodes with signal 40.
             for(int i=0; i<size; i++){
-                if(rank!=i){
+                unsigned u_i = i;
+                unsigned u_rank = rank;
+                if(rank!=i && differAtOneBitPos(u_rank, u_i)){
                     MPI_Iprobe(i, 45, MPI_COMM_WORLD, &fortyFiveFlag[i], &status[i]);
                     //May be i need to receive the fortyfive in some dummy array so as to flush it out of the mpi ecosystem.
                     if(fortyFiveFlag[i] != 0){
@@ -618,18 +610,18 @@ int main(int argc, char *argv[])
                         if(pq.size() < offloadCount*3){
                             continue;
                         }
-                        int count = 1;
-                        int index=0;
-                        Path pqs_Top = pq.top();
-                        tempQ.push(pqs_Top);
-                        pq.pop();
-                        //Now pgs top contains node which needs to be sent to the other guy
+                        for(int j = 0; j < s_QE - 1; j++){
+                            Path pqs_Top = pq.top();
+                            tempQ.push(pqs_Top);
+                            pq.pop();
+                        }
                         tempSolutionForSending40 = pq.top();
                         pq.pop();
-
-                        Path tempQsTop = tempQ.top();
-                        tempQ.pop();
-                        pq.push(tempQsTop);
+                        while(!tempQ.empty()){
+                            Path tempQ_top = tempQ.top();
+                            pq.push(tempQ_top);
+                            tempQ.pop();
+                        }
                         //printf("40 Send of rank %d sending to ran %d\n", rank, i);
                         if(MPI_Send(&tempSolutionForSending40, offloadCount, MPI_Path, i, 40, MPI_COMM_WORLD) == MPI_SUCCESS){
                             //printf("Succcessfully sent data to processor %d\n",i);
@@ -645,13 +637,14 @@ int main(int argc, char *argv[])
 
             //There will be a QE barrier here, B2
             //MPI_Barrier(MPI_COMM_WORLD);
-            noWork = true;
+
             //This is check 40 and receive the nodes in qeReceiveBuffer.
             for(int i=0; i<size; i++){
-                if(rank!=i){
+                unsigned u_i = i;
+                unsigned u_rank = rank;
+                if(rank!=i && differAtOneBitPos(u_rank, u_i)){
                     MPI_Iprobe(i, 40, MPI_COMM_WORLD, &fortyFlag[i], &status[i]);
                     if(fortyFlag[i] != 0){
-                        noWork = false;
                         //Someone has send me some work.
                         //So i need to receive it
                         //printf("I am rank %d and I am receiving some data from %d\n", rank, i);
@@ -670,8 +663,6 @@ int main(int argc, char *argv[])
 
             iter++;
         }
-
-        // This is where we must try to detect if a processor thinks it had the best solution
         while(bestSoultionUpdates <= 3 && (guysWhoAreDone <= size-1))
         {
             for(int i = 0; i < size; i++)
@@ -698,11 +689,10 @@ int main(int argc, char *argv[])
             }
             
         }
-        if(bestSoultionUpdates >= 2 || noWork)
+        if(bestSoultionUpdates >= 2)
         {
             send_termination_data(rank, size, 60, &best_solution, MPI_Path);
         }
-
         MPI_Barrier(MPI_COMM_WORLD);
         totalEnd = MPI_Wtime();
         //printf("Iteration %d\n", iter);
@@ -853,6 +843,7 @@ int main(int argc, char *argv[])
         printf("--Config--\n");
         printf("\t--Number of Processors = %d\n", size);
         printf("\t--Input data size - (n * n) matrix - = %d\n", MAXSIZE);
+        printf("\t--S value is %d\n", s_QE);
         printf("\t--The number of Nodes = %d\n", numOfNodes);
         printf("--Results--\n");
         printf("\t--My Best Solution Path = ");
@@ -1130,4 +1121,20 @@ void send_termination_data(int rank, int num_processors, int sig_num, Path *toSe
             MPI_Send(toSend, 1, MPI_Path, i, sig_num, MPI_COMM_WORLD);
         }
     }
+}
+
+// function to check if x is power of 2
+bool isPowerOfTwo(unsigned int x)
+{
+    // First x in the below expression is
+    // for the case when x is 0
+    return x && (!(x & (x - 1)));
+}
+
+// function to check whether the two numbers
+// differ at one bit position only
+bool differAtOneBitPos(unsigned int a,
+                       unsigned int b)
+{
+    return isPowerOfTwo(a ^ b);
 }

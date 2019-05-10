@@ -672,7 +672,7 @@ int main(int argc, char *argv[])
         }
 
         // This is where we must try to detect if a processor thinks it had the best solution
-        while(bestSoultionUpdates <= 3 && (guysWhoAreDone <= size-1) || noWork)
+        while(bestSoultionUpdates <= 3 && (guysWhoAreDone <= size-1))
         {
             for(int i = 0; i < size; i++)
             {
@@ -698,7 +698,7 @@ int main(int argc, char *argv[])
             }
             
         }
-        if(bestSoultionUpdates >= 2)
+        if(bestSoultionUpdates >= 2 || noWork)
         {
             send_termination_data(rank, size, 60, &best_solution, MPI_Path);
         }

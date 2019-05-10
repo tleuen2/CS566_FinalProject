@@ -207,11 +207,11 @@ qsub Improved_QE_INPUT28.pbs -F "4 1 1" -l nodes=1:ppn=16
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "4 1 4" -l nodes=4:ppn=2
 #sleep 10
-#qsub Improved_QE_INPUT28.pbs -F "4 1 4" -l nodes=4:ppn=4
+qsub Improved_QE_INPUT28.pbs -F "4 1 4" -l nodes=4:ppn=4
 #sleep 10
-#qsub Improved_QE_INPUT28.pbs -F "4 1 4" -l nodes=4:ppn=8
+qsub Improved_QE_INPUT28.pbs -F "4 1 4" -l nodes=4:ppn=8
 #sleep 10
-#qsub Improved_QE_INPUT28.pbs -F "4 1 4" -l nodes=4:ppn=16
+qsub Improved_QE_INPUT28.pbs -F "4 1 4" -l nodes=4:ppn=16
 #sleep 10
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "5 1 4" -l nodes=4:ppn=1

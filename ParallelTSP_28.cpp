@@ -669,7 +669,8 @@ int main(int argc, char *argv[])
             iter++;
         }
 
-        while(bestSoultionUpdates <= 2 && (guysWhoAreDone <= size-1))
+        // This is where we must try to detect if a processor thinks it had the best solution
+        while(bestSoultionUpdates <= 10 && (guysWhoAreDone <= size-1))
         {
             for(int i = 0; i < size; i++)
             {

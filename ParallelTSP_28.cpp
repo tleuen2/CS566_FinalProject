@@ -1029,7 +1029,7 @@ bool recieve_termination_message(int rank, int num_processors, int sig_num, int 
     return output;
 }
 
-bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int *guysWhoAreDone)
+bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output[], MPI_Datatype MPI_Path, int *guysWhoAreDone)
 {
     bool reVal = false;
     int recieveFlags[num_processors];

@@ -98,9 +98,10 @@ public:
 int prims(int **A, int n); //function of prim-algo for MST.
 void start_partition_phase(int partial_solution_size, int size_of_processors, int size_input, int rank,
                            priority_queue<Path, vector<Path>, NodeCompare>  *myQueue, float adj_matrix[MAXSIZE][MAXSIZE]);
-void send_termination_data(int rank, int num_processors, int sig_num, Path *toSend, MPI_Datatype MPI_Path);
+bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int *guysWhoAreDone);
 bool send_termination_message(int rank, int num_processors, int sig_num);
 bool recieve_termination_message(int rank, int num_processors, int sig_num, int *guysWhoAreDone);
+void send_termination_data(int rank, int num_processors, int sig_num, Path *toSend, MPI_Datatype MPI_Path);
 
 int main(int argc, char *argv[])
 {
@@ -287,6 +288,8 @@ int main(int argc, char *argv[])
     priority_queue<Path, vector<Path>, NodeCompare> sTH_Q;
     int rankToSend;
     int guysWhoAreDone = 0;
+    int bestSoultionUpdates = 0;
+    Path nodesFromTermination[size];
 
 
 
@@ -348,17 +351,24 @@ int main(int argc, char *argv[])
 
             //Here we can check for code 60
             //printf("I am rank %d and checking for termination messages\n",rank);
-            bool value = recieve_termination_message(rank, size, 60, &guysWhoAreDone);
-            //printf("I am rank %d and value is %s\n",rank, value?"true":"false");
-            if(value)
+
+
+            //bool value = recieve_termination_message(rank, size, 60, &guysWhoAreDone);
+            recieve_termination_data(rank, size, 60, &nodesFromTermination, MPI_Path, &guysWhoAreDone)
+
+            for(int i = 0; i < size; i++)
             {
-                if(guysWhoAreDone == size-1){
-                    //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
-                    break;
+                if(nodesFromTermination[i].cost < best_solution.cost)
+                {
+                    best_solution = nodesFromTermination[i];
                 }
-                //printf("***This is the number that have terminated %d\n", guysWhoAreDone);
             }
-            //guysWhoAreDone = 0;
+            if(guysWhoAreDone == size-1){
+                //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
+                break;
+            }
+            //printf("***This is the number that have terminated %d\n", guysWhoAreDone);
+
 
 
             for(int i=0; i<size; i++){
@@ -366,12 +376,17 @@ int main(int argc, char *argv[])
                     MPI_Iprobe(i, 0, MPI_COMM_WORLD, &zeroFlag[i], &status[i]);
                     if(zeroFlag[i] != 0){
                         someonesSolution.init();
-                        if(MPI_Recv(&someonesSolution, 1, MPI_Path, i, 0, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS){
-                            if(someonesSolution.cost<=best_solution.cost){
+                        if(MPI_Recv(&someonesSolution, 1, MPI_Path, i, 0, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS)
+                        {
+                            if(someonesSolution.cost<=best_solution.cost)
+                            {
+                                bestSoultionUpdates++
                                 best_solution = someonesSolution;
                             }
                             zeroFlag[i] = 0;
-                        }else{
+                        }
+                        else
+                        {
                             //printf("Error making TAG0 receive probe for processor %d\n",i);
                         }
                     }
@@ -626,9 +641,17 @@ int main(int argc, char *argv[])
 
             iter++;
         }
-        if(send_termination_message(rank, size, 60)){
-            //printf("%s\n", "Send the 60 message properly");
+
+        // Check if I think I have the global best soltuion
+        if(bestSoultionUpdates > (size / 2))
+        {
+            send_termination_data(rank, size, 60, &best_solution, MPI_Path);
+            // if(send_termination_message(rank, size, 60))
+            // {
+            //     //printf("%s\n", "Send the 60 message properly");
+            // }
         }
+
         MPI_Barrier(MPI_COMM_WORLD);
         totalEnd = MPI_Wtime();
         //printf("Iteration %d\n", iter);
@@ -1006,25 +1029,28 @@ bool recieve_termination_message(int rank, int num_processors, int sig_num, int 
     return output;
 }
 
-void recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int guysWhoAreDone[])
+bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int *guysWhoAreDone)
 {
+    bool output = false;
     int recieveFlags[num_processors];
     MPI_Status status[num_processors];
     for(int i = 0; i < num_processors; i++)
     {
-        if(guysWhoAreDone[i] != 0)
+        if (rank != i) 
         {
-            if (rank != i) {
-                MPI_Iprobe(i, sig_num, MPI_COMM_WORLD, &recieveFlags[i], &status[i]);
-                //May be i need to receive the fortyfive in some dummy array so as to flush it out of the mpi ecosystem.
-                if (recieveFlags[i] != 0) {
-                    //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
-                    MPI_Recv(&output, 1, MPI_Path, i, sig_num, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-                }
+            MPI_Iprobe(i, sig_num, MPI_COMM_WORLD, &recieveFlags[i], &status[i]);
+            //May be i need to receive the fortyfive in some dummy array so as to flush it out of the mpi ecosystem.
+            if (recieveFlags[i] != 0) {
+                //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
+                MPI_Recv(output[i], 1, MPI_Path, i, sig_num, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                *guysWhoAreDone += 1;
+                output = true;
             }
+            recieveFlags[i] = 0;
         }
     }
+
+    return output;
 }
 
 bool send_termination_message(int rank, int num_processors, int sig_num)
@@ -1049,7 +1075,7 @@ void send_termination_data(int rank, int num_processors, int sig_num, Path *toSe
     {
         if(rank != i)
         {
-            MPI_Send(&toSend, 1, MPI_Path, i, sig_num, MPI_COMM_WORLD);
+            MPI_Send(toSend, 1, MPI_Path, i, sig_num, MPI_COMM_WORLD);
         }
     }
 }

@@ -41,7 +41,7 @@
 #sleep 10
 #qsub FinalProject28INPUT.pbs -F "4 1 1" -l nodes=1:ppn=2
 #sleep 10
-qsub FinalProject28INPUT.pbs -F "4 1 1" -l nodes=1:ppn=4
+#qsub FinalProject28INPUT.pbs -F "4 1 1" -l nodes=1:ppn=4
 #sleep 10
 #qsub FinalProject28INPUT.pbs -F "4 1 1" -l nodes=1:ppn=8
 #sleep 10

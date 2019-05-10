@@ -515,7 +515,7 @@ int main(int argc, char *argv[])
 
             //This is where missed communication logic begins
             //printf("I am rank %d and step is %d\n",rank, 3);
-            if(rank == myRepresentative && ((iter+1)%5)){
+            if(rank == myRepresentative && ((iter+1)%1)){
                 if(MPI_Send(&node_S_QE_missed[missedGuyRank], 1, MPI_Path, missedGuyRank, 37, MPI_COMM_WORLD) == MPI_SUCCESS){
                     //printf("I am rank %d and I sent data to %d\n",rank, missedGuyRank);
                 }else{

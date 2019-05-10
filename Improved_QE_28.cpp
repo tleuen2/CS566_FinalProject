@@ -1136,7 +1136,7 @@ bool differAtOneBitPos(unsigned int a,
 
 int getMissedGuy(int rank,int num_processor){
     int dimension = (int) log2(num_processor*1.0);
-    printf("I am rank %d and my dimension is %d\n", rank, dimension);
+    //printf("I am rank %d and my dimension is %d\n", rank, dimension);
     int answer;
 //    if(rank >= num_processor/2){
 //        answer = rank - pow(2,dimension-1) + 1;
@@ -1147,13 +1147,13 @@ int getMissedGuy(int rank,int num_processor){
     unsigned int temp = ~rank;
     temp = temp << (32-dimension);
     temp = temp >> (32-dimension);
-    printf("I am rank %d and my missedguy is %d\n", rank, temp);
+    //printf("I am rank %d and my missedguy is %d\n", rank, temp);
     return temp;
 }
 
 int getRepresentative(int rank,int num_processor){
     int dimension = (int) log2(num_processor*1.0);
-    printf("I am rank %d and my dimension is %d\n", rank, dimension);
+    //printf("I am rank %d and my dimension is %d\n", rank, dimension);
     unsigned int answer = rank >> (dimension-2);
     answer = answer << (dimension-2);
 

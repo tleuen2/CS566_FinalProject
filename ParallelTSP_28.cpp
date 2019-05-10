@@ -354,7 +354,7 @@ int main(int argc, char *argv[])
 
 
             //bool value = recieve_termination_message(rank, size, 60, &guysWhoAreDone);
-            recieve_termination_data(rank, size, 60, &nodesFromTermination, MPI_Path, &guysWhoAreDone)
+            recieve_termination_data(rank, size, 60, &nodesFromTermination, MPI_Path, &guysWhoAreDone);
 
             for(int i = 0; i < size; i++)
             {

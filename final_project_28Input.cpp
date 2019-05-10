@@ -16,9 +16,9 @@
 
 using namespace std;
 
-#define filename "Input28.txt"
+#define filename "Input48.txt"
 #define INF 3000000
-#define MAXSIZE 28
+#define MAXSIZE 30
 
 struct city
 {
@@ -296,6 +296,7 @@ int main(int argc, char *argv[])
     priority_queue<Path, vector<Path>, NodeCompare> sTH_Q;
     int rankToSend;
     int guysWhoAreDone = 0;
+    int totalGuysDone = 0;
     Path node_S_QE_missed[size];
     int missedGuyRank;
     Path missedGuysSthNode;
@@ -364,10 +365,11 @@ int main(int argc, char *argv[])
             //Here we can check for code 60
             //printf("I am rank %d and checking for termination messages\n",rank);
             bool value = recieve_termination_message(rank, size, 60, &guysWhoAreDone);
+            totalGuysDone += guysWhoAreDone;
             //printf("I am rank %d and value is %s\n",rank, value?"true":"false");
             if(value)
             {
-                if(guysWhoAreDone == size-1){
+                if(totalGuysDone == size-1){
                     //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
                     break;
                 }
@@ -527,11 +529,12 @@ int main(int argc, char *argv[])
                     //Someone has sent me some work.
                     //So i need to receive it
                     //printf("I am rank %d and receiving from %d\n",rank, tempInt);
-                    if(MPI_Recv(&missedGuysSthNode, 1, MPI_Path, tempInt, 37, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS){
+                    if(MPI_Recv(&node_S_QE_missed[tempInt], 1, MPI_Path, tempInt, 37, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS){
                         //printf("I am rank %d and I received from %d\n",rank, tempInt);;
+
                         toTheQueue = node_S_QE_missed[tempInt];
                         //toTheQueue.toString();
-                        if(toTheQueue.cost > node_S_QE[0].cost){
+                        if(toTheQueue.cost < node_S_QE[0].cost){
                             pq.push(toTheQueue);
                             for(int i=0; i<s_QE-1; i++){
                                 Path pqs_Top = pq.top();

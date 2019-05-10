@@ -365,7 +365,9 @@ int main(int argc, char *argv[])
                     if (TestTermRecieveFlags[i] != 0) 
                     {
                         //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
-                        recieve_termination_data(rank, size, 60, &nodesFromTermination[i], MPI_Path, &guysWhoAreDone, i);
+                        //recieve_termination_data(rank, size, 60, &nodesFromTermination[i], MPI_Path, &guysWhoAreDone, i);
+                        MPI_Recv(&nodesFromTermination[i], 1, MPI_Path, i, 60, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                        guysWhoAreDone += 1;
                         if(nodesFromTermination[i].cost < best_solution.cost)
                         {
                             // Terminate

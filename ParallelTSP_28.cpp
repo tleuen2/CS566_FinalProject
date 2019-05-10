@@ -290,6 +290,8 @@ int main(int argc, char *argv[])
     int guysWhoAreDone = 0;
     int bestSoultionUpdates = 0;
     Path nodesFromTermination[size];
+    int TestTermRecieveFlags[num_processors];
+    MPI_Status TestTermStatus[num_processors];
 
 
 
@@ -354,7 +356,28 @@ int main(int argc, char *argv[])
 
 
             //bool value = recieve_termination_message(rank, size, 60, &guysWhoAreDone);
-            recieve_termination_data(rank, size, 60, &nodesFromTermination, MPI_Path, &guysWhoAreDone);
+
+            for(int i = 0; i < size; i++)
+            {
+                if (rank != i) 
+                {
+                    MPI_Iprobe(i, sig_num, MPI_COMM_WORLD, &TestTermRecieveFlags[i], &TestTermStatus[i]);
+                    if (TestTermRecieveFlags[i] != 0) 
+                    {
+                        //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
+                        recieve_termination_data(rank, size, 60, &nodesFromTermination[i], MPI_Path, &guysWhoAreDone);
+                        if(nodesFromTermination[i].cost < best_solution.cost)
+                        {
+                            // Terminate
+                            bestSoultionUpdates = size;
+                        }
+                    }
+                    TestTermRecieveFlags[i] = 0;
+                }
+                
+            }
+
+            
 
             for(int i = 0; i < size; i++)
             {
@@ -1029,26 +1052,26 @@ bool recieve_termination_message(int rank, int num_processors, int sig_num, int 
     return output;
 }
 
-bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output[], MPI_Datatype MPI_Path, int *guysWhoAreDone)
+bool recieve_termination_data(int rank, int num_processors, int sig_num, Path *output, MPI_Datatype MPI_Path, int *guysWhoAreDone)
 {
-    bool reVal = false;
-    int recieveFlags[num_processors];
-    MPI_Status status[num_processors];
-    for(int i = 0; i < num_processors; i++)
-    {
-        if (rank != i) 
-        {
-            MPI_Iprobe(i, sig_num, MPI_COMM_WORLD, &recieveFlags[i], &status[i]);
+    //bool reVal = false;
+    //int recieveFlags[num_processors];
+    //MPI_Status status[num_processors];
+    // for(int i = 0; i < num_processors; i++)
+    // {
+    //     if (rank != i) 
+    //     {
+    //         MPI_Iprobe(i, sig_num, MPI_COMM_WORLD, &recieveFlags[i], &status[i]);
             //May be i need to receive the fortyfive in some dummy array so as to flush it out of the mpi ecosystem.
-            if (recieveFlags[i] != 0) {
+           // if (recieveFlags[i] != 0) {
                 //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
-                MPI_Recv(output[i], 1, MPI_Path, i, sig_num, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(output, 1, MPI_Path, i, sig_num, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 *guysWhoAreDone += 1;
-                reVal = true;
-            }
-            recieveFlags[i] = 0;
-        }
-    }
+                //reVal = true;
+            //}
+           //recieveFlags[i] = 0;
+       // }
+    //}
 
     return output;
 }

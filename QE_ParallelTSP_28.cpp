@@ -689,7 +689,7 @@ int main(int argc, char *argv[])
             }
             
         }
-        if(bestSoultionUpdates >= 2)
+        if(bestSoultionUpdates >= 2 || (pq.size() <s_QE))
         {
             send_termination_data(rank, size, 60, &best_solution, MPI_Path);
         }

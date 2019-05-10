@@ -292,6 +292,7 @@ int main(int argc, char *argv[])
     Path nodesFromTermination[size];
     int TestTermRecieveFlags[size];
     MPI_Status TestTermStatus[size];
+    bool noWork;
 
 
 
@@ -644,12 +645,13 @@ int main(int argc, char *argv[])
 
             //There will be a QE barrier here, B2
             //MPI_Barrier(MPI_COMM_WORLD);
-
+            noWork = true;
             //This is check 40 and receive the nodes in qeReceiveBuffer.
             for(int i=0; i<size; i++){
                 if(rank!=i){
                     MPI_Iprobe(i, 40, MPI_COMM_WORLD, &fortyFlag[i], &status[i]);
                     if(fortyFlag[i] != 0){
+                        noWork = false;
                         //Someone has send me some work.
                         //So i need to receive it
                         //printf("I am rank %d and I am receiving some data from %d\n", rank, i);
@@ -670,7 +672,7 @@ int main(int argc, char *argv[])
         }
 
         // This is where we must try to detect if a processor thinks it had the best solution
-        while(bestSoultionUpdates <= 3 && (guysWhoAreDone <= size-1))
+        while(bestSoultionUpdates <= 3 && (guysWhoAreDone <= size-1) || noWork)
         {
             for(int i = 0; i < size; i++)
             {

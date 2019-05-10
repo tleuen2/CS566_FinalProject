@@ -488,7 +488,7 @@ qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=2
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=8
 #sleep 10
-#qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=16
+qsub Improved_QE_INPUT28.pbs -F "4 1 9" -l nodes=9:ppn=16
 #sleep 10
 #sleep 10
 #qsub Improved_QE_INPUT28.pbs -F "5 1 9" -l nodes=9:ppn=1

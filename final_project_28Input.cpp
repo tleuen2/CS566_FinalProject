@@ -16,9 +16,9 @@
 
 using namespace std;
 
-#define filename "Input28.txt"
+#define filename "Input22.txt"
 #define INF 3000000
-#define MAXSIZE 28
+#define MAXSIZE 22
 
 struct city
 {

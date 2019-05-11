@@ -196,7 +196,7 @@
 #sleep 10
 #qsub FinalProject32INPUT.pbs -F "3 1 4" -l nodes=4:ppn=2
 #sleep 10
-#qsub FinalProject32INPUT.pbs -F "3 1 4" -l nodes=4:ppn=4
+qsub FinalProject32INPUT.pbs -F "3 1 4" -l nodes=4:ppn=4
 #sleep 10
 #qsub FinalProject32INPUT.pbs -F "3 1 4" -l nodes=4:ppn=8
 #sleep 10
@@ -262,7 +262,7 @@
 ##sleep 10
 #qsub FinalProject32INPUT.pbs -F "4 1 8" -l nodes=8:ppn=1
 #sleep 10
-qsub FinalProject32INPUT.pbs -F "4 1 8" -l nodes=8:ppn=2
+#qsub FinalProject32INPUT.pbs -F "4 1 8" -l nodes=8:ppn=2
 #sleep 10
 ##qsub FinalProject32INPUT.pbs -F "4 1 8" -l nodes=8:ppn=4
 ##sleep 10

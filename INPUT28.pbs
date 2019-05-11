@@ -8,4 +8,4 @@
 #PBS -d /classes/csece566/tleuen2/CS566_FinalProject
 
 module load tools/mpich2-1.5-gcc
-mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_32 $1 $2 $3 >> QE32Matrix.out
+mpirun -machinefile $PBS_NODEFILE -np $PBS_NP ./QE_Parallel_TSP_32 $1 $2 $3 >> TEST_QE32Matrix.out

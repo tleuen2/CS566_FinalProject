@@ -302,7 +302,10 @@ int main(int argc, char *argv[])
     Path missedGuysSthNode;
     int myRepresentative = getRepresentative(rank, size);
     Path toTheQueue;
-
+    int bestSoultionUpdates = 0;
+    Path nodesFromTermination[size];
+    int TestTermRecieveFlags[size];
+    MPI_Status TestTermStatus[size];
 
 
 
@@ -364,17 +367,48 @@ int main(int argc, char *argv[])
             //printf("I am rank %d and step is %d\n",rank, 2);
             //Here we can check for code 60
             //printf("I am rank %d and checking for termination messages\n",rank);
-            bool value = recieve_termination_message(rank, size, 60, &guysWhoAreDone);
-            totalGuysDone += guysWhoAreDone;
-            //printf("I am rank %d and value is %s\n",rank, value?"true":"false");
-            if(value)
+            
+            
+            
+            
+            for(int i = 0; i < size; i++)
             {
-                if(totalGuysDone == size-1){
-                    //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
-                    break;
+                if (rank != i) 
+                {
+                    MPI_Iprobe(i, 60, MPI_COMM_WORLD, &TestTermRecieveFlags[i], &TestTermStatus[i]);
+                    if (TestTermRecieveFlags[i] != 0) 
+                    {
+                        //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
+                        //recieve_termination_data(rank, size, 60, &nodesFromTermination[i], MPI_Path, &guysWhoAreDone, i);
+                        MPI_Recv(&nodesFromTermination[i], 1, MPI_Path, i, 60, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                        guysWhoAreDone += 1;
+                        if(nodesFromTermination[i].cost < best_solution.cost)
+                        {
+                            // Terminate
+                            best_solution = nodesFromTermination[i];
+                            bestSoultionUpdates = size;
+                        }
+                    }
+                    TestTermRecieveFlags[i] = 0;
                 }
-                //printf("***This is the number that have terminated %d\n", guysWhoAreDone);
+                
             }
+
+
+
+
+
+            //totalGuysDone += guysWhoAreDone;
+            //printf("I am rank %d and value is %s\n",rank, value?"true":"false");
+            //if(value)
+            //{
+            if(totalGuysDone == size-1)
+            {
+                    //printf("Breaking the loop and announcing myself as a winner %d\n", rank);
+                break;
+            }
+                //printf("***This is the number that have terminated %d\n", guysWhoAreDone);
+            //}
             //guysWhoAreDone = 0;
 
 
@@ -384,7 +418,9 @@ int main(int argc, char *argv[])
                     if(zeroFlag[i] != 0){
                         someonesSolution.init();
                         if(MPI_Recv(&someonesSolution, 1, MPI_Path, i, 0, MPI_COMM_WORLD,MPI_STATUS_IGNORE)== MPI_SUCCESS){
-                            if(someonesSolution.cost<=best_solution.cost){
+                            if(someonesSolution.cost<=best_solution.cost)
+                            {
+                                bestSoultionUpdates++;
                                 best_solution = someonesSolution;
                             }
                             zeroFlag[i] = 0;
@@ -707,9 +743,42 @@ int main(int argc, char *argv[])
             //printf("iteration %d\n", iter);
             iter++;
         }
-        if(send_termination_message(rank, size, 60)){
-            //printf("%s\n", "Send the 60 message properly");
+        
+        
+
+        // This is where we must try to detect if a processor thinks it had the best solution
+        while(bestSoultionUpdates <= 3 && (guysWhoAreDone <= size-1))
+        {
+            for(int i = 0; i < size; i++)
+            {
+                if (rank != i) 
+                {
+                    MPI_Iprobe(i, 60, MPI_COMM_WORLD, &TestTermRecieveFlags[i], &TestTermStatus[i]);
+                    if (TestTermRecieveFlags[i] != 0) 
+                    {
+                        //printf("I am rank %d and I found out another processor terminated %d\n", rank, i);
+                        //recieve_termination_data(rank, size, 60, &nodesFromTermination[i], MPI_Path, &guysWhoAreDone, i);
+                        MPI_Recv(&nodesFromTermination[i], 1, MPI_Path, i, 60, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                        guysWhoAreDone += 1;
+                        if(nodesFromTermination[i].cost < best_solution.cost)
+                        {
+                            // Terminate
+                            best_solution = nodesFromTermination[i];
+                            bestSoultionUpdates = size;
+                        }
+                    }
+                    TestTermRecieveFlags[i] = 0;
+                }
+                
+            }
+            
         }
+        if(bestSoultionUpdates >= 2)
+        {
+            send_termination_data(rank, size, 60, &best_solution, MPI_Path);
+        }
+
+
         MPI_Barrier(MPI_COMM_WORLD);
         totalEnd = MPI_Wtime();
         //printf("Iteration %d\n", iter);

@@ -13,6 +13,7 @@ IQEPTSP:
 FinalProject:
 	mpicxx -DMPICH_SKIP_MPICXX -o FinalProject final_project_28Input.cpp
 	mpicxx -DMPICH_SKIP_MPICXX -o FinalProject_32 final_project_32Input.cpp
+	mpicxx -DMPICH_SKIP_MPICXX -o FinalProject_22 final_project_22Input.cpp
 	
 PTSP:
 	mpicxx -DMPICH_SKIP_MPICXX -o Parallel_TSP_6 ParallelTSP_6.cpp
